@@ -8,6 +8,8 @@ import {
   Users
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { ErrorBoundary, ApiErrorBoundary } from '../components/ErrorBoundary';
+import { LoadingState, PageLoading } from '../components/LoadingState';
 import { instructionsApi, promptsApi, healthApi } from '../api/services';
 import { useAppStore } from '../store/useAppStore';
 import { 
@@ -277,89 +279,97 @@ const Dashboard: React.FC = () => {
   ];
 
   if (instructionsLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return <PageLoading message="Loading dashboard..." />;
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="md:flex md:items-center md:justify-between">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Dashboard
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Welcome back! Here's what's happening with your prompts and instructions.
-          </p>
+    <ErrorBoundary>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="md:flex md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+              Dashboard
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Welcome back! Here's what's happening with your prompts and instructions.
+            </p>
+          </div>
+          <div className="mt-4 flex md:ml-4 md:mt-0">
+            <Link to="/instructions">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                New Instruction
+              </Button>
+            </Link>
+          </div>
         </div>
-        <div className="mt-4 flex md:ml-4 md:mt-0">
-          <Link to="/instructions">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Instruction
-            </Button>
-          </Link>
+
+        {/* Stats Component */}
+        <ErrorBoundary>
+          <DashboardStats stats={stats} />
+        </ErrorBoundary>
+
+        {/* Recent Content */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          {/* Instructions Panel */}
+          <ApiErrorBoundary>
+            <InstructionsPanel
+              instructions={allInstructions}
+              loading={instructionsScrollLoading}
+              hasMore={instructionsHasMore}
+              favoriteInstructions={favoriteInstructions}
+              onLoadMore={loadMoreInstructions}
+              onEdit={handleEditInstruction}
+              onDelete={handleDeleteInstruction}
+              onToggleFavorite={toggleInstructionFavorite}
+            />
+          </ApiErrorBoundary>
+
+          {/* Prompts Panel */}
+          <ApiErrorBoundary>
+            <PromptsPanel
+              prompts={allPrompts}
+              loading={promptsScrollLoading}
+              hasMore={promptsHasMore}
+              favoritePrompts={favoritePrompts}
+              onLoadMore={loadMorePrompts}
+              onEdit={handleEditPrompt}
+              onDelete={handleDeletePrompt}
+              onToggleFavorite={togglePromptFavorite}
+            />
+          </ApiErrorBoundary>
         </div>
+
+        {/* System Health Panel */}
+        <ErrorBoundary>
+          <SystemHealthPanel healthStatus={healthStatus} />
+        </ErrorBoundary>
+
+        {/* Edit Modals */}
+        <ErrorBoundary>
+          <EditModals
+            isEditInstructionModalOpen={isEditInstructionModalOpen}
+            editingInstruction={editingInstruction}
+            onCloseInstructionModal={() => {
+              setIsEditInstructionModalOpen(false);
+              setEditingInstruction(null);
+            }}
+            onSubmitInstructionEdit={onInstructionEditSubmit}
+            isEditPromptModalOpen={isEditPromptModalOpen}
+            editingPrompt={editingPrompt}
+            onClosePromptModal={() => {
+              setIsEditPromptModalOpen(false);
+              setEditingPrompt(null);
+              setVariables([]);
+            }}
+            onSubmitPromptEdit={onPromptEditSubmit}
+            variables={variables}
+            setVariables={setVariables}
+          />
+        </ErrorBoundary>
       </div>
-
-      {/* Stats Component */}
-      <DashboardStats stats={stats} />
-
-      {/* Recent Content */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Instructions Panel */}
-        <InstructionsPanel
-          instructions={allInstructions}
-          loading={instructionsScrollLoading}
-          hasMore={instructionsHasMore}
-          favoriteInstructions={favoriteInstructions}
-          onLoadMore={loadMoreInstructions}
-          onEdit={handleEditInstruction}
-          onDelete={handleDeleteInstruction}
-          onToggleFavorite={toggleInstructionFavorite}
-        />
-
-        {/* Prompts Panel */}
-        <PromptsPanel
-          prompts={allPrompts}
-          loading={promptsScrollLoading}
-          hasMore={promptsHasMore}
-          favoritePrompts={favoritePrompts}
-          onLoadMore={loadMorePrompts}
-          onEdit={handleEditPrompt}
-          onDelete={handleDeletePrompt}
-          onToggleFavorite={togglePromptFavorite}
-        />
-      </div>
-
-      {/* System Health Panel */}
-      <SystemHealthPanel healthStatus={healthStatus} />
-
-      {/* Edit Modals */}
-      <EditModals
-        isEditInstructionModalOpen={isEditInstructionModalOpen}
-        editingInstruction={editingInstruction}
-        onCloseInstructionModal={() => {
-          setIsEditInstructionModalOpen(false);
-          setEditingInstruction(null);
-        }}
-        onSubmitInstructionEdit={onInstructionEditSubmit}
-        isEditPromptModalOpen={isEditPromptModalOpen}
-        editingPrompt={editingPrompt}
-        onClosePromptModal={() => {
-          setIsEditPromptModalOpen(false);
-          setEditingPrompt(null);
-          setVariables([]);
-        }}
-        onSubmitPromptEdit={onPromptEditSubmit}
-        variables={variables}
-        setVariables={setVariables}
-      />
-    </div>
+    </ErrorBoundary>
   );
 };
 

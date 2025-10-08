@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
+import { AuthUtils, SecurityUtils } from '../utils/security';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -17,14 +18,20 @@ class ApiClient {
   }
 
   private setupInterceptors() {
-    // Request interceptor
+    // Request interceptor with secure headers
     this.client.interceptors.request.use(
       (config) => {
-        // Add auth token if available
-        const token = localStorage.getItem('authToken');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // Add secure headers including auth token and CSRF protection
+        const secureHeaders = AuthUtils.getSecureHeaders();
+        Object.entries(secureHeaders).forEach(([key, value]) => {
+          config.headers[key] = value;
+        });
+        
+        // Sanitize request data if present
+        if (config.data && typeof config.data === 'object') {
+          config.data = SecurityUtils.sanitizeFormData(config.data);
         }
+        
         return config;
       },
       (error) => {
@@ -32,17 +39,22 @@ class ApiClient {
       }
     );
 
-    // Response interceptor
+    // Response interceptor with secure error handling
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
         return response;
       },
       (error) => {
-        const message = error.response?.data?.message || error.message || 'An error occurred';
+        // Sanitize error messages to prevent information disclosure
+        const message = SecurityUtils.sanitizeErrorMessage(error.response?.data || error);
         
         if (error.response?.status === 401) {
           toast.error('Authentication required');
+          // Clear tokens and redirect to login
+          AuthUtils.clearSecureToken();
           // Handle logout or redirect
+        } else if (error.response?.status === 403) {
+          toast.error('Access forbidden');
         } else if (error.response?.status >= 500) {
           toast.error('Server error occurred');
         } else {

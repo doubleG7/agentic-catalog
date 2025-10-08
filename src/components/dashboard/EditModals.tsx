@@ -4,6 +4,8 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input, Textarea, Select } from '../ui/Input';
+import { SecurityUtils } from '../../utils/security';
+import { FormErrorBoundary } from '../ErrorBoundary';
 import { 
   Instruction, 
   Prompt, 
@@ -19,13 +21,13 @@ interface EditModalsProps {
   isEditInstructionModalOpen: boolean;
   editingInstruction: Instruction | null;
   onCloseInstructionModal: () => void;
-  onSubmitInstructionEdit: (data: any) => Promise<void>;
+  onSubmitInstructionEdit: (data: UpdateInstructionRequest) => Promise<void>;
   
   // Prompt Modal Props
   isEditPromptModalOpen: boolean;
   editingPrompt: Prompt | null;
   onClosePromptModal: () => void;
-  onSubmitPromptEdit: (data: any) => Promise<void>;
+  onSubmitPromptEdit: (data: UpdatePromptRequest & { variables: PromptVariable[] }) => Promise<void>;
   
   // Variables management
   variables: PromptVariable[];
@@ -122,6 +124,18 @@ export const EditModals: React.FC<EditModalsProps> = ({
     setVariables([]);
   };
 
+  const handleInstructionSubmit = (data: UpdateInstructionRequest) => {
+    // Sanitize form data before submission
+    const sanitizedData = SecurityUtils.sanitizeFormData(data);
+    return onSubmitInstructionEdit(sanitizedData);
+  };
+
+  const handlePromptSubmit = (data: UpdatePromptRequest) => {
+    // Sanitize form data and include variables
+    const sanitizedData = SecurityUtils.sanitizeFormData(data);
+    return onSubmitPromptEdit({ ...sanitizedData, variables });
+  };
+
   const instructionCategoryOptions = Object.values(InstructionCategory).map((category) => ({
     value: category,
     label: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
@@ -141,7 +155,8 @@ export const EditModals: React.FC<EditModalsProps> = ({
         title="Edit Instruction"
         size="lg"
       >
-        <form onSubmit={handleSubmitInstructionEdit(onSubmitInstructionEdit)} className="space-y-4">
+        <FormErrorBoundary>
+          <form onSubmit={handleSubmitInstructionEdit(handleInstructionSubmit)} className="space-y-4">
           <Input
             label="Title *"
             {...registerInstructionEdit('title', { required: 'Title is required' })}
@@ -193,6 +208,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
             </Button>
           </div>
         </form>
+        </FormErrorBoundary>
       </Modal>
 
       {/* Edit Prompt Modal */}
@@ -202,7 +218,8 @@ export const EditModals: React.FC<EditModalsProps> = ({
         title="Edit Prompt"
         size="lg"
       >
-        <form onSubmit={handleSubmitPromptEdit(onSubmitPromptEdit)} className="space-y-4">
+        <FormErrorBoundary>
+          <form onSubmit={handleSubmitPromptEdit(handlePromptSubmit)} className="space-y-4">
           <Input
             label="Title *"
             {...registerPromptEdit('title', { required: 'Title is required' })}
@@ -346,6 +363,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
             </Button>
           </div>
         </form>
+        </FormErrorBoundary>
       </Modal>
     </>
   );
