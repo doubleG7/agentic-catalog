@@ -1,0 +1,53 @@
+Trimble UI Guidelines for React Development
+
+Project structure:
+/src
+  /api        ← API service clients (Axios-based)
+  /components ← Shared UI components (Buttons, Forms, Modals)
+  /pages      ← Route-level views (Employees, TimeEntries, Payroll, etc.)
+  /hooks      ← Custom React hooks
+  /types      ← TypeScript interfaces and DTOs
+  /utils      ← Helper functions
+  /styles     ← Tailwind config and global styles
+
+
+Standard Packages.json
+ 	"dotenv": "^16.5.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "framer-motion": "^12.23.16",
+    "lucide-react": "^0.510.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+
+UI/UX & Tailwind Guidelines
+    •Use Tailwind utility-first classes for layout, spacing, and colors.
+	•Apply responsive design using Tailwind’s breakpoint system.
+	•Use modal dialogs or slide-ins for create/edit flows.
+	•Prefer dropdowns, toggles, and status badges for visual clarity.
+
+API Integration Standards
+	•Use Axios for all HTTP requests with a centralized api.ts or axiosInstance.ts file for base URL and interceptors.
+	•Use TypeScript types/interfaces to strictly type request/response bodies.
+	•Error states should be handled with user-friendly toasts, banners, or modals.
+	•All forms must show client-side validation and include loading indicators.
+
+Security and Identity
+	•Authentication is handled via Trimble ID with an access token available in a secure context.
+	•Attach auth tokens via Axios interceptors if applicable.
+	•Do not store sensitive employee data (e.g., SSN, bank info) in browser memory.
+
+Routing & Navigation
+	•Use react-router-dom with a nested layout pattern.
+	•Each page component under /pages maps to a route.
+	•Use a consistent Layout.tsx with shared header/sidebar/navigation.
+
+Testing & Dev Experience
+	•Use ESLint and Prettier for consistent formatting.
+	•Include basic unit tests using React Testing Library for core components.
+	•Enable Hot Module Reloading in development for faster UI iteration.
+
+Optional Enhancements
+	•Use React Query or SWR for caching, revalidation, and stale state handling.
+	•Include telemetry using OpenTelemetry JS SDK or LogRocket for user session diagnostics.
+	•Add CSV import/export support (tax brackets, reports).
+	•Use Feature Flags to toggle UI modules in dev/test environments.

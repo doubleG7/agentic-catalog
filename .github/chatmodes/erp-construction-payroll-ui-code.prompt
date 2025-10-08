@@ -1,0 +1,49 @@
+Title: Generate Prompt & Instruction Set Frontend UI (React + TypeScript + Tailwind) 
+seperate runnable project. 
+
+Description:
+Build a modern, hosted frontend-only application for a Construction Payroll System. 
+Use React, TypeScript, and Tailwind CSS to create responsive, accessible UI components 
+that interact with the provided RESTful API endpoints. Backend services are assumed to 
+be deployed and accessible via /api/v1... paths. 
+
+Task:
+1. UI Needs to be responsive design and available for mobile, tablet and web browsers.
+
+2. Generate a React/Typescript dashboard UI for building out a prompt, 
+instruction sets for business, product, software engineering and development. Would like to save 
+and categorizing the instructions, plus show relations between connected instructions to execute against. 
+Would like to leverage Tailwind CSS, https://reactflow.dev/ for visualization and a slide out navigation 
+for the groups of instructions/prompts to choose from and drop in. 
+
+
+API Categories to Integrate:
+
+Management
+	•	List, create, edit, delete instructions & prompts
+	•	Endpoints:
+	•	GET /api/instructions
+	•	GET /api/instructions/{id}
+	•	POST /api/instructions or prompts
+	•	PUT /api/instructions/{id}
+	•	DELETE /api/instructions/{id}
+
+System Health
+	•	Show system health status in footer or dashboard
+	•	Endpoint: GET /health
+
+UI Functional Requirements
+	•	React + TypeScript + Tailwind CSS
+	•	Use React Router for page navigation
+	•	Use Axios or Fetch for API calls
+	•	Implement basic loading states and error handling
+	•	Form validation using React Hook Form or similar
+	•	Pages:
+		•	Home Dashboard
+		•	Instruction Entries List
+		•	Settings
+
+Bonus Features (Optional)
+	•	Dark Mode toggle
+	•	React Query/SWR for API data management
+	•	Mobile-responsive grid/table layouts
