@@ -45,14 +45,23 @@ const InstructionNode = ({ data, selected, id }: { data: any; selected?: boolean
     <div className={`relative px-4 py-3 shadow-lg rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-2 min-w-[220px] transition-all duration-200 group ${
       selected ? 'border-blue-500 shadow-blue-200' : 'border-blue-200 hover:border-blue-300'
     }`}>
-      {/* Delete Button */}
-      <button
-        onClick={handleDelete}
-        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 shadow-md"
-        title="Delete node"
-      >
-        <Trash2 size={12} />
-      </button>
+      {/* Action Buttons */}
+      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+        <button
+          onClick={handleEdit}
+          className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md"
+          title="Edit node"
+        >
+          <Edit size={12} />
+        </button>
+        <button
+          onClick={handleDelete}
+          className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md"
+          title="Delete node"
+        >
+          <Trash2 size={12} />
+        </button>
+      </div>
       
       {/* Input handles 
       <Handle

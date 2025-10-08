@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { ErrorBoundary, ApiErrorBoundary } from '../components/ErrorBoundary';
-import { LoadingState, PageLoading } from '../components/LoadingState';
+import { PageLoading } from '../components/LoadingState';
 import { instructionsApi, promptsApi, healthApi } from '../api/services';
 import { useAppStore } from '../store/useAppStore';
 import { 
