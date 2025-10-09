@@ -713,7 +713,7 @@ Generate complete implementation with error handling and security best practices
     ]
   },
   {
-    id: '3',
+    id: '17',
     title: 'Code Analysis & Review',
     description: 'Perform comprehensive code analysis and provide improvement suggestions.',
     content: `Please analyze the following code and provide a comprehensive review:
@@ -894,7 +894,7 @@ Ensure code is production-ready with proper logging, monitoring, and scalability
     ]
   },
   {
-    id: '4',
+    id: '18',
     title: 'Code Review Assistant',
     description: 'Generate comprehensive code review feedback and improvement suggestions.',
     content: `Review the following code and provide detailed feedback:
@@ -938,7 +938,7 @@ Provide specific recommendations for improvement.`,
     ]
   },
   {
-    id: '5',
+    id: '19',
     title: 'API Documentation Generator',
     description: 'Generate comprehensive API documentation from endpoint specifications.',
     content: `Create detailed API documentation for:

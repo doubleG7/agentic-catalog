@@ -24,22 +24,22 @@ import {
 import { useAppStore } from '../store/useAppStore';
 import toast from 'react-hot-toast';
 
+// Extended interface for UI compatibility
+interface UIVersionableItem extends VersionableItem {
+  title: string;
+  type: 'instruction' | 'prompt' | 'collection';
+  createdAt: string;
+  updatedAt: string;
+}
+
 const Deployments: React.FC = () => {
   const { instructions, prompts, collections } = useAppStore();
-  const [selectedItem, setSelectedItem] = useState<VersionableItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<UIVersionableItem | null>(null);
   const [showPromotionModal, setShowPromotionModal] = useState(false);
   const [targetEnvironment, setTargetEnvironment] = useState<Environment>(Environment.QA);
   const [filterEnvironment, setFilterEnvironment] = useState<Environment | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<PromotionStatus | 'all'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
-
-  // Extended interface for UI compatibility
-  interface UIVersionableItem extends VersionableItem {
-    title: string;
-    type: 'instruction' | 'prompt' | 'collection';
-    createdAt: string;
-    updatedAt: string;
-  }
   
   // Convert existing items to VersionableItems (in real app this would come from API)
   const [versionableItems, setVersionableItems] = useState<UIVersionableItem[]>([]);
@@ -97,7 +97,7 @@ const Deployments: React.FC = () => {
       
       // Update local state (in real app this would be an API call)
       setVersionableItems(prev => prev.map(i => 
-        i.id === item.id 
+        i.id === item.id && i.type === item.type
           ? {
               ...i,
               environments: {
@@ -123,7 +123,7 @@ const Deployments: React.FC = () => {
       
       // Update local state
       setVersionableItems(prev => prev.map(item => 
-        item.id === selectedItem?.id 
+        item.id === selectedItem?.id && item.type === selectedItem?.type
           ? {
               ...item,
               environments: {
@@ -363,7 +363,7 @@ const Deployments: React.FC = () => {
       >
         {filteredItems.map((item, index) => (
           <motion.div
-            key={item.id}
+            key={`${item.type}-${item.id}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 * index }}
