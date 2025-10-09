@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -54,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -65,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             className="fixed inset-0 z-40 lg:hidden"
           >
             <div
-              className="fixed inset-0 bg-gray-600 bg-opacity-75"
+              className="fixed inset-0 bg-gray-600 dark:bg-gray-950 bg-opacity-75 dark:bg-opacity-75"
               onClick={() => setSidebarOpen(false)}
             />
           </motion.div>
@@ -80,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl lg:hidden"
+            className="fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-800 shadow-xl lg:hidden"
           >
             <SidebarContent
               navigation={navigation}
@@ -106,7 +107,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main content */}
       <div className="lg:pl-80">
         {/* Top navigation */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"
@@ -118,14 +119,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="relative flex flex-1">
-              <Search className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 pl-3" />
+              <Search className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 dark:text-gray-500 pl-3" />
               <input
-                className="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                className="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 dark:text-gray-100 bg-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm"
                 placeholder="Search instructions and prompts..."
                 type="search"
               />
             </div>
             <div className="flex items-center gap-x-4 lg:gap-x-6">
+              <ThemeToggle />
               <Button variant="ghost" size="sm">
                 <Bell className="h-5 w-5" />
               </Button>
@@ -160,9 +162,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   const [expandedSection, setExpandedSection] = useState<string | null>('instructions');
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 ring-1 ring-gray-900/10">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-800 px-6 pb-4 ring-1 ring-gray-900/10 dark:ring-gray-700/50">
       <div className="flex h-16 shrink-0 items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900">Prompt Studio</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Prompt Studio</h1>
         {onClose && (
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />
@@ -183,8 +185,8 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                       to={item.href}
                       className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${
                         isActive
-                          ? 'bg-primary-50 text-primary-600'
-                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                          : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                       onClick={onClose}
                     >
@@ -198,7 +200,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </li>
 
           <li>
-            <div className="text-xs font-semibold leading-6 text-gray-400">
+            <div className="text-xs font-semibold leading-6 text-gray-400 dark:text-gray-500">
               BROWSE CATEGORIES
             </div>
             <ul role="list" className="-mx-2 mt-2 space-y-1">
@@ -209,10 +211,10 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                       expandedSection === 'instructions' ? null : 'instructions'
                     )
                   }
-                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <span>Instructions</span>
-                  <span className="ml-auto text-xs text-gray-400">
+                  <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
                     {instructionCategories.reduce((sum, cat) => sum + cat.count, 0)}
                   </span>
                 </button>
@@ -229,11 +231,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                         <li key={category.name}>
                           <Link
                             to={`/instructions?category=${category.name.toLowerCase().replace(' ', '_')}`}
-                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200"
                             onClick={onClose}
                           >
                             <span>{category.name}</span>
-                            <span className="text-xs text-gray-400">{category.count}</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">{category.count}</span>
                           </Link>
                         </li>
                       ))}
@@ -247,10 +249,10 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                   onClick={() =>
                     setExpandedSection(expandedSection === 'prompts' ? null : 'prompts')
                   }
-                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <span>Prompts</span>
-                  <span className="ml-auto text-xs text-gray-400">
+                  <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
                     {promptCategories.reduce((sum, cat) => sum + cat.count, 0)}
                   </span>
                 </button>
@@ -267,11 +269,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
                         <li key={category.name}>
                           <Link
                             to={`/prompts?category=${category.name.toLowerCase().replace(' ', '_')}`}
-                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200"
                             onClick={onClose}
                           >
                             <span>{category.name}</span>
-                            <span className="text-xs text-gray-400">{category.count}</span>
+                            <span className="text-xs text-gray-400 dark:text-gray-500">{category.count}</span>
                           </Link>
                         </li>
                       ))}

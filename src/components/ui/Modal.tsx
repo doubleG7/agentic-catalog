@@ -36,7 +36,7 @@ const Modal: React.FC<ModalProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+              className="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity"
               onClick={onClose}
             />
 
@@ -46,14 +46,14 @@ const Modal: React.FC<ModalProps> = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className={`relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:p-6 ${sizeClasses[size]}`}
+              className={`relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:p-6 ${sizeClasses[size]}`}
             >
               <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onClose}
-                  className="rounded-md text-gray-400 hover:text-gray-500"
+                  className="rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"
                 >
                   <X className="h-6 w-6" />
                 </Button>
@@ -61,7 +61,7 @@ const Modal: React.FC<ModalProps> = ({
 
               <div className="sm:flex sm:items-start">
                 <div className="w-full mt-3 text-center sm:ml-0 sm:mt-0 sm:text-left">
-                  <h3 className="text-lg font-semibold leading-6 text-gray-900 mb-4">
+                  <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white mb-4">
                     {title}
                   </h3>
                   {children}
