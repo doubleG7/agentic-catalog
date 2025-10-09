@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import InstructionDetail from './pages/InstructionDetail';
 import PromptDetail from './pages/PromptDetail';
 import FlowVisualization from './pages/FlowVisualization';
+import Deployments from './pages/Deployments';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/prompts/:id" element={<PromptDetail />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/flow" element={<FlowVisualization />} />
+          <Route path="/deployments" element={<Deployments />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </Layout>

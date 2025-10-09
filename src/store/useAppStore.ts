@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { Instruction, Prompt, HealthStatus } from '../types';
+import { Collection } from '../types/versioning';
 
 interface AppState {
   // Instructions state
@@ -12,6 +13,11 @@ interface AppState {
   prompts: Prompt[];
   promptsLoading: boolean;
   promptsError: string | null;
+  
+  // Collections state
+  collections: Collection[];
+  collectionsLoading: boolean;
+  collectionsError: string | null;
   
   // Health status
   healthStatus: HealthStatus | null;
@@ -40,6 +46,13 @@ interface AppState {
   updatePrompt: (id: string, prompt: Partial<Prompt>) => void;
   removePrompt: (id: string) => void;
   
+  setCollections: (collections: Collection[]) => void;
+  setCollectionsLoading: (loading: boolean) => void;
+  setCollectionsError: (error: string | null) => void;
+  addCollection: (collection: Collection) => void;
+  updateCollection: (id: string, collection: Partial<Collection>) => void;
+  removeCollection: (id: string) => void;
+  
   setHealthStatus: (status: HealthStatus | null) => void;
   setHealthLoading: (loading: boolean) => void;
   
@@ -64,6 +77,10 @@ export const useAppStore = create<AppState>()(
       prompts: [],
       promptsLoading: false,
       promptsError: null,
+      
+      collections: [],
+      collectionsLoading: false,
+      collectionsError: null,
       
       healthStatus: null,
       healthLoading: false,
@@ -116,6 +133,28 @@ export const useAppStore = create<AppState>()(
       removePrompt: (id) =>
         set((state) => ({
           prompts: state.prompts.filter((prompt) => prompt.id !== id),
+        })),
+      
+      // Collections actions
+      setCollections: (collections) => set({ collections }),
+      setCollectionsLoading: (loading) => set({ collectionsLoading: loading }),
+      setCollectionsError: (error) => set({ collectionsError: error }),
+      
+      addCollection: (collection) => 
+        set((state) => ({ 
+          collections: [...state.collections, collection] 
+        })),
+      
+      updateCollection: (id, updatedCollection) =>
+        set((state) => ({
+          collections: state.collections.map((collection) =>
+            collection.id === id ? { ...collection, ...updatedCollection } : collection
+          ),
+        })),
+      
+      removeCollection: (id) =>
+        set((state) => ({
+          collections: state.collections.filter((collection) => collection.id !== id),
         })),
       
       // Health actions

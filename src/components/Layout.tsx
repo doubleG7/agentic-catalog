@@ -12,6 +12,7 @@ import {
   Search,
   Bell,
   FolderOpen,
+  Rocket,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
@@ -30,6 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Prompts', href: '/prompts', icon: MessageSquare },
     { name: 'Collections', href: '/collections', icon: FolderOpen },
     { name: 'Flow View', href: '/flow', icon: GitBranch },
+    { name: 'Deployments', href: '/deployments', icon: Rocket },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
