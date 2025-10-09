@@ -15,7 +15,7 @@ export class EnvironmentManager {
   private static deploymentConfigs: Record<Environment, DeploymentConfig> = {
     [Environment.DEVELOPMENT]: {
       environment: Environment.DEVELOPMENT,
-      apiEndpoint: process.env.VITE_DEV_API_URL || 'http://localhost:3001/api/v1',
+      apiEndpoint: import.meta.env.VITE_DEV_API_URL || 'http://localhost:3001/api/v1',
       requiresApproval: false,
       approvalRoles: [],
       autoPromoteOnSuccess: false,
@@ -24,7 +24,7 @@ export class EnvironmentManager {
     },
     [Environment.QA]: {
       environment: Environment.QA,
-      apiEndpoint: process.env.VITE_QA_API_URL || 'https://qa-api.example.com/api/v1',
+      apiEndpoint: import.meta.env.VITE_QA_API_URL || 'https://qa-api.example.com/api/v1',
       requiresApproval: true,
       approvalRoles: ['developer', 'qa_lead'],
       autoPromoteOnSuccess: false,
@@ -34,7 +34,7 @@ export class EnvironmentManager {
     },
     [Environment.STAGING]: {
       environment: Environment.STAGING,
-      apiEndpoint: process.env.VITE_STAGING_API_URL || 'https://staging-api.example.com/api/v1',
+      apiEndpoint: import.meta.env.VITE_STAGING_API_URL || 'https://staging-api.example.com/api/v1',
       requiresApproval: true,
       approvalRoles: ['qa_lead', 'product_manager'],
       autoPromoteOnSuccess: false,
@@ -44,7 +44,7 @@ export class EnvironmentManager {
     },
     [Environment.PRODUCTION]: {
       environment: Environment.PRODUCTION,
-      apiEndpoint: process.env.VITE_PROD_API_URL || 'https://api.example.com/api/v1',
+      apiEndpoint: import.meta.env.VITE_PROD_API_URL || 'https://api.example.com/api/v1',
       requiresApproval: true,
       approvalRoles: ['product_manager', 'admin'],
       autoPromoteOnSuccess: false,
