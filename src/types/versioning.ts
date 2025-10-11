@@ -13,6 +13,11 @@ export interface Collection {
   createdAt: string;
   updatedAt: string;
   isPublic: boolean;
+  rating?: {
+    average: number; // 0-5 with decimal support (e.g., 4.5)
+    count: number; // total number of ratings
+    userRating?: number; // current user's rating
+  };
 }
 
 /**

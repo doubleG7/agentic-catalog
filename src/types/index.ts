@@ -10,6 +10,11 @@ export interface Instruction {
   isPublic: boolean;
   relatedInstructions: string[];
   variables?: InstructionVariable[];
+  rating?: {
+    average: number; // 0-5 with decimal support (e.g., 4.5)
+    count: number; // total number of ratings
+    userRating?: number; // current user's rating
+  };
   metadata?: {
     author?: string;
     version?: string;
@@ -41,6 +46,11 @@ export interface Prompt {
   isPublic: boolean;
   relatedPrompts: string[];
   variables: PromptVariable[];
+  rating?: {
+    average: number; // 0-5 with decimal support (e.g., 4.5)
+    count: number; // total number of ratings
+    userRating?: number; // current user's rating
+  };
 }
 
 export interface PromptVariable {

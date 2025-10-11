@@ -44,8 +44,7 @@ const Dashboard: React.FC = () => {
   const [promptsHasMore, setPromptsHasMore] = useState(true);
   const [instructionsScrollLoading, setInstructionsScrollLoading] = useState(false);
   const [promptsScrollLoading, setPromptsScrollLoading] = useState(false);
-  const [favoriteInstructions, setFavoriteInstructions] = useState<Set<string>>(new Set());
-  const [favoritePrompts, setFavoritePrompts] = useState<Set<string>>(new Set());
+  // Rating functionality will be handled through the individual components
   
   // Edit modal states
   const [isEditInstructionModalOpen, setIsEditInstructionModalOpen] = useState(false);
@@ -197,28 +196,42 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const toggleInstructionFavorite = (id: string) => {
-    const newFavorites = new Set(favoriteInstructions);
-    if (newFavorites.has(id)) {
-      newFavorites.delete(id);
-      toast.success('Removed from favorites');
-    } else {
-      newFavorites.add(id);
-      toast.success('Added to favorites');
-    }
-    setFavoriteInstructions(newFavorites);
+  const handleInstructionRating = (id: string, rating: number) => {
+    // Update the instruction's rating in the local state
+    setAllInstructions(prev => 
+      prev.map(instruction => 
+        instruction.id === id 
+          ? {
+              ...instruction,
+              rating: {
+                average: rating, // In a real app, this would be calculated server-side
+                count: (instruction.rating?.count || 0) + 1,
+                userRating: rating
+              }
+            }
+          : instruction
+      )
+    );
+    toast.success('Rating submitted successfully');
   };
 
-  const togglePromptFavorite = (id: string) => {
-    const newFavorites = new Set(favoritePrompts);
-    if (newFavorites.has(id)) {
-      newFavorites.delete(id);
-      toast.success('Removed from favorites');
-    } else {
-      newFavorites.add(id);
-      toast.success('Added to favorites');
-    }
-    setFavoritePrompts(newFavorites);
+  const handlePromptRating = (id: string, rating: number) => {
+    // Update the prompt's rating in the local state
+    setAllPrompts(prev => 
+      prev.map(prompt => 
+        prompt.id === id 
+          ? {
+              ...prompt,
+              rating: {
+                average: rating, // In a real app, this would be calculated server-side
+                count: (prompt.rating?.count || 0) + 1,
+                userRating: rating
+              }
+            }
+          : prompt
+      )
+    );
+    toast.success('Rating submitted successfully');
   };
 
   useEffect(() => {
@@ -288,10 +301,10 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="md:flex md:items-center md:justify-between">
           <div className="min-w-0 flex-1">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+            <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
               Dashboard
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Welcome back! Here's what's happening with your prompts and instructions.
             </p>
           </div>
@@ -318,11 +331,10 @@ const Dashboard: React.FC = () => {
               instructions={allInstructions}
               loading={instructionsScrollLoading}
               hasMore={instructionsHasMore}
-              favoriteInstructions={favoriteInstructions}
               onLoadMore={loadMoreInstructions}
               onEdit={handleEditInstruction}
               onDelete={handleDeleteInstruction}
-              onToggleFavorite={toggleInstructionFavorite}
+              onRatingChange={handleInstructionRating}
             />
           </ApiErrorBoundary>
 
@@ -332,11 +344,10 @@ const Dashboard: React.FC = () => {
               prompts={allPrompts}
               loading={promptsScrollLoading}
               hasMore={promptsHasMore}
-              favoritePrompts={favoritePrompts}
               onLoadMore={loadMorePrompts}
               onEdit={handleEditPrompt}
               onDelete={handleDeletePrompt}
-              onToggleFavorite={togglePromptFavorite}
+              onRatingChange={handlePromptRating}
             />
           </ApiErrorBoundary>
         </div>

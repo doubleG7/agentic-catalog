@@ -286,6 +286,24 @@ const Instructions: React.FC = () => {
     }
   };
 
+  const handleRating = (id: string, rating: number) => {
+    // Update the instruction's rating in the local state
+    const updatedInstructions = instructions.map(instruction => 
+      instruction.id === id 
+        ? {
+            ...instruction,
+            rating: {
+              average: rating, // In a real app, this would be calculated server-side
+              count: (instruction.rating?.count || 0) + 1,
+              userRating: rating
+            }
+          }
+        : instruction
+    );
+    setInstructions(updatedInstructions);
+    toast.success('Rating submitted successfully');
+  };
+
   const handleView = (instruction: Instruction) => {
     window.location.href = `/instructions/${instruction.id}`;
   };
@@ -314,6 +332,7 @@ const Instructions: React.FC = () => {
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
       />
 

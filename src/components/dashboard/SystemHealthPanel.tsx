@@ -18,17 +18,17 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ healthStat
   }
 
   return (
-    <div className="card p-6">
+    <div className="card p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">System Status</h3>
-          <p className="text-sm text-gray-500">Current system health</p>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">System Status</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Current system health</p>
         </div>
         <div
           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
             healthStatus.status === 'healthy'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
           }`}
         >
           {healthStatus.status === 'healthy' ? 'All systems operational' : 'Issues detected'}
@@ -41,7 +41,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ healthStat
               healthStatus.services.database === 'up' ? 'bg-green-500' : 'bg-red-500'
             }`}
           />
-          <span className="text-sm text-gray-600">Database</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">Database</span>
         </div>
         <div className="flex items-center">
           <div
@@ -49,7 +49,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ healthStat
               healthStatus.services.api === 'up' ? 'bg-green-500' : 'bg-red-500'
             }`}
           />
-          <span className="text-sm text-gray-600">API</span>
+          <span className="text-sm text-gray-300 dark:text-gray-300">API</span>
         </div>
       </div>
     </div>

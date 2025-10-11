@@ -1,6 +1,8 @@
 import React from 'react';
-import { Star, Clock, Settings, Tag, Eye, Edit, Trash2 } from 'lucide-react';
+import { Clock, Settings, Tag, Eye, Edit, Trash2 } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { RatingDisplay } from '../ui/RatingDisplay';
+import { StarRating } from '../ui/StarRating';
 import { Prompt } from '../../types';
 
 interface PromptCardProps {
@@ -8,6 +10,7 @@ interface PromptCardProps {
   onView: (prompt: Prompt) => void;
   onEdit: (prompt: Prompt) => void;
   onDelete: (id: string) => void;
+  onRatingChange?: (id: string, rating: number) => void;
 }
 
 export const PromptCard: React.FC<PromptCardProps> = ({
@@ -15,7 +18,13 @@ export const PromptCard: React.FC<PromptCardProps> = ({
   onView,
   onEdit,
   onDelete,
+  onRatingChange,
 }) => {
+  const handleRatingSubmit = (rating: number) => {
+    if (onRatingChange) {
+      onRatingChange(prompt.id, rating);
+    }
+  };
   return (
     <div className="card p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between">
@@ -27,9 +36,6 @@ export const PromptCard: React.FC<PromptCardProps> = ({
             {prompt.description}
           </p>
         </div>
-        {prompt.isPublic && (
-          <Star className="h-5 w-5 text-yellow-400 ml-2" />
-        )}
       </div>
 
       <div className="mt-4">
@@ -72,13 +78,14 @@ export const PromptCard: React.FC<PromptCardProps> = ({
         )}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
+      {/* Action Buttons */}
+      <div className="mt-6">
         <div className="flex space-x-2">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onView(prompt)}
-            className="h-7 px-2 text-xs border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+            className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
           >
             <Eye className="h-3 w-3 mr-1" />
             View
@@ -87,7 +94,7 @@ export const PromptCard: React.FC<PromptCardProps> = ({
             variant="outline" 
             size="sm"
             onClick={() => onEdit(prompt)}
-            className="h-7 px-2 text-xs border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+            className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
           >
             <Edit className="h-3 w-3 mr-1" />
             Edit
@@ -96,11 +103,40 @@ export const PromptCard: React.FC<PromptCardProps> = ({
             variant="outline" 
             size="sm"
             onClick={() => onDelete(prompt.id)}
-            className="h-7 px-2 text-xs text-red-600 hover:text-red-700 hover:border-red-300 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+            className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-red-500 dark:focus:border-red-400"
           >
             <Trash2 className="h-3 w-3 mr-1" />
             Delete
           </Button>
+        </div>
+      </div>
+
+      {/* Rating Section */}
+      <div className="mt-4">
+        <div className="flex items-center space-x-2">
+          {onRatingChange ? (
+            <div className="flex items-center space-x-2">
+              <StarRating
+                rating={prompt.rating?.userRating || 0}
+                onRatingChange={handleRatingSubmit}
+                size="sm"
+              />
+              {prompt.rating && prompt.rating.count > 0 && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({prompt.rating.count})
+                </span>
+              )}
+            </div>
+          ) : (
+            prompt.rating && (
+              <RatingDisplay
+                rating={prompt.rating.average}
+                totalRatings={prompt.rating.count}
+                size="sm"
+                showCount
+              />
+            )
+          )}
         </div>
       </div>
     </div>

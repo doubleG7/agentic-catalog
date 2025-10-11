@@ -44,7 +44,12 @@ This framework provides a structured approach to developing robust business stra
     createdAt: '2025-09-15T10:00:00Z',
     updatedAt: '2025-09-20T14:30:00Z',
     isPublic: true,
-    relatedInstructions: ['2']
+    relatedInstructions: ['2'],
+    rating: {
+      average: 4.5,
+      count: 12,
+      userRating: 5
+    }
   },
   {
     id: '2',
@@ -83,7 +88,12 @@ Clearly define the problem this product solves.
     createdAt: '2025-09-10T09:15:00Z',
     updatedAt: '2025-09-18T16:45:00Z',
     isPublic: true,
-    relatedInstructions: ['1']
+    relatedInstructions: ['1'],
+    rating: {
+      average: 3.8,
+      count: 7,
+      userRating: 4
+    }
   },
   {
     id: '3',
@@ -588,6 +598,11 @@ Please generate clean, production-ready code with proper formatting and comments
     updatedAt: '2025-09-19T11:25:00Z',
     isPublic: true,
     relatedPrompts: ['2'],
+    rating: {
+      average: 4.7,
+      count: 23,
+      userRating: 5
+    },
     variables: [
       { name: 'componentName', type: 'text', required: true },
       { name: 'propsInterface', type: 'text', required: false },

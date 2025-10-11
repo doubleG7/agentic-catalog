@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -17,6 +17,7 @@ import {
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
 import { ThemeToggle } from './ThemeToggle';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -25,6 +26,42 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { sidebarOpen, setSidebarOpen } = useAppStore();
   const location = useLocation();
+  const { theme } = useTheme();
+  
+  // Determine if dark mode is active
+  const isDarkMode = useMemo(() => {
+    if (theme === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return theme === 'dark';
+  }, [theme]);
+
+  const backgroundClass = useMemo(() => (
+    isDarkMode
+      ? 'bg-gradient-to-br from-gray-950 via-slate-900 to-black'
+      : 'bg-gradient-to-br from-slate-50 via-white to-blue-100'
+  ), [isDarkMode]);
+
+  const glowOpacity = isDarkMode ? 'opacity-25' : 'opacity-60';
+  const glowPalette = isDarkMode
+    ? ['bg-purple-600', 'bg-blue-500', 'bg-indigo-600']
+    : ['bg-purple-300', 'bg-blue-200', 'bg-indigo-300'];
+
+  const scrollbarStyles = `
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: ${isDarkMode ? '#1f2937' : '#f1f5f9'};
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: ${isDarkMode ? '#4b5563' : '#cbd5e1'};
+      border-radius: 3px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: ${isDarkMode ? '#6b7280' : '#94a3b8'};
+    }
+  `;
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -55,7 +92,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`relative min-h-screen transition-colors duration-700 ease-in-out ${backgroundClass}`}>
+      {/* Inject custom scrollbar styles */}
+      <style dangerouslySetInnerHTML={{ __html: scrollbarStyles }} />
+      
+      {/* Background glow elements */}
+      <div className={`absolute inset-0 overflow-hidden pointer-events-none transition-opacity duration-700 ease-in-out ${glowOpacity}`}>
+        <div className={`absolute top-[10%] left-[5%] w-64 h-64 ${glowPalette[0]} rounded-full blur-3xl`}></div>
+        <div className={`absolute top-[40%] left-[60%] w-96 h-96 ${glowPalette[1]} rounded-full blur-3xl`}></div>
+        <div className={`absolute bottom-[10%] right-[20%] w-72 h-72 ${glowPalette[2]} rounded-full blur-3xl`}></div>
+      </div>
       {/* Mobile sidebar overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -81,7 +127,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-800 shadow-xl lg:hidden"
+            className="fixed inset-y-0 left-0 z-50 w-80 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-xl lg:hidden"
           >
             <SidebarContent
               navigation={navigation}
@@ -96,18 +142,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-80 lg:flex-col">
-        <SidebarContent
-          navigation={navigation}
-          instructionCategories={instructionCategories}
-          promptCategories={promptCategories}
-          currentPath={location.pathname}
-        />
+        <div className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md h-full">
+          <SidebarContent
+            navigation={navigation}
+            instructionCategories={instructionCategories}
+            promptCategories={promptCategories}
+            currentPath={location.pathname}
+          />
+        </div>
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-80">
+      <div className="lg:pl-80 relative z-10">
         {/* Top navigation */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <Button
             variant="ghost"
             size="sm"
@@ -136,7 +184,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         {/* Page content */}
-        <main className="py-10">
+        <main className="py-10 relative z-10">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
@@ -162,7 +210,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   const [expandedSection, setExpandedSection] = useState<string | null>('instructions');
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-800 px-6 pb-4 ring-1 ring-gray-900/10 dark:ring-gray-700/50">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-transparent px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center justify-between">
         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Prompt Studio</h1>
         {onClose && (

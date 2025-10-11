@@ -1,30 +1,38 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Star, Edit, Trash2, Loader2, Settings } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { RatingDisplay } from '../ui/RatingDisplay';
+import { StarRating } from '../ui/StarRating';
 import { Prompt } from '../../types';
 
 interface PromptsPanelProps {
   prompts: Prompt[];
   loading: boolean;
   hasMore: boolean;
-  favoritePrompts: Set<string>;
   onLoadMore: () => void;
   onEdit: (prompt: Prompt) => void;
   onDelete: (id: string) => void;
-  onToggleFavorite: (id: string) => void;
+  onRatingChange?: (id: string, rating: number) => void;
 }
 
 export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   prompts,
   loading,
   hasMore,
-  favoritePrompts,
   onLoadMore,
   onEdit,
   onDelete,
-  onToggleFavorite,
+  onRatingChange,
 }) => {
+  const [showRatingInputs, setShowRatingInputs] = useState<Record<string, boolean>>({});
+
+  const handleRatingSubmit = (id: string, rating: number) => {
+    if (onRatingChange) {
+      onRatingChange(id, rating);
+    }
+    setShowRatingInputs(prev => ({ ...prev, [id]: false }));
+  };
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -120,18 +128,37 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
                     </Button>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleFavorite(prompt.id);
-                  }}
-                  className="h-10 w-10 p-0 text-gray-400 hover:text-yellow-500 dark:text-gray-500 dark:hover:text-yellow-400"
-                >
-                  <Star className={`h-6 w-6 ${favoritePrompts.has(prompt.id) ? 'fill-yellow-400 text-yellow-400' : ''}`} />
-                </Button>
+                <div className="flex flex-col items-end space-y-2">
+                  {prompt.rating && (
+                    <RatingDisplay
+                      rating={prompt.rating.average}
+                      totalRatings={prompt.rating.count}
+                      size="sm"
+                      showCount
+                    />
+                  )}
+                  {!showRatingInputs[prompt.id] && onRatingChange && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowRatingInputs(prev => ({ ...prev, [prompt.id]: true }));
+                      }}
+                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                      {prompt.rating?.userRating ? 'Update' : 'Rate'}
+                    </button>
+                  )}
+                  {showRatingInputs[prompt.id] && (
+                    <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg">
+                      <StarRating
+                        rating={prompt.rating?.userRating || 0}
+                        onRatingChange={(rating) => handleRatingSubmit(prompt.id, rating)}
+                        size="sm"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}

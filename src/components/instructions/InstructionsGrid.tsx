@@ -9,6 +9,7 @@ interface InstructionsGridProps {
   onView: (instruction: Instruction) => void;
   onEdit: (instruction: Instruction) => void;
   onDelete: (id: string) => void;
+  onRatingChange?: (id: string, rating: number) => void;
   onCreateClick: () => void;
 }
 
@@ -17,6 +18,7 @@ export const InstructionsGrid: React.FC<InstructionsGridProps> = ({
   onView,
   onEdit,
   onDelete,
+  onRatingChange,
   onCreateClick,
 }) => {
   if (instructions.length === 0) {
@@ -48,6 +50,7 @@ export const InstructionsGrid: React.FC<InstructionsGridProps> = ({
           onView={onView}
           onEdit={onEdit}
           onDelete={onDelete}
+          onRatingChange={onRatingChange}
         />
       ))}
     </div>

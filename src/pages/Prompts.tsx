@@ -203,6 +203,24 @@ const Prompts: React.FC = () => {
     }
   };
 
+  const handleRating = (id: string, rating: number) => {
+    // Update the prompt's rating in the local state
+    const updatedPrompts = prompts.map(prompt => 
+      prompt.id === id 
+        ? {
+            ...prompt,
+            rating: {
+              average: rating, // In a real app, this would be calculated server-side
+              count: (prompt.rating?.count || 0) + 1,
+              userRating: rating
+            }
+          }
+        : prompt
+    );
+    setPrompts(updatedPrompts);
+    toast.success('Rating submitted successfully');
+  };
+
   const handleView = (prompt: Prompt) => {
     setViewingPrompt(prompt);
     setIsViewModalOpen(true);
@@ -257,6 +275,7 @@ const Prompts: React.FC = () => {
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
       />
 

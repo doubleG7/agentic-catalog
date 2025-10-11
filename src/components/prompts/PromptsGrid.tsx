@@ -9,6 +9,7 @@ interface PromptsGridProps {
   onView: (prompt: Prompt) => void;
   onEdit: (prompt: Prompt) => void;
   onDelete: (id: string) => void;
+  onRatingChange?: (id: string, rating: number) => void;
   onCreateClick: () => void;
 }
 
@@ -17,6 +18,7 @@ export const PromptsGrid: React.FC<PromptsGridProps> = ({
   onView,
   onEdit,
   onDelete,
+  onRatingChange,
   onCreateClick,
 }) => {
   if (prompts.length === 0) {
@@ -48,6 +50,7 @@ export const PromptsGrid: React.FC<PromptsGridProps> = ({
           onView={onView}
           onEdit={onEdit}
           onDelete={onDelete}
+          onRatingChange={onRatingChange}
         />
       ))}
     </div>
