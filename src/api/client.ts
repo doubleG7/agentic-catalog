@@ -4,10 +4,14 @@ import { AuthUtils, SecurityUtils } from '../utils/security';
 
 class ApiClient {
   private client: AxiosInstance;
+  private useMockFallback: boolean;
 
   constructor() {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3007/api/v1';
+    this.useMockFallback = import.meta.env.VITE_ENABLE_MOCK_FALLBACK === 'true';
+    
     this.client = axios.create({
-      baseURL: '/api/v1',
+      baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
@@ -84,6 +88,15 @@ class ApiClient {
   async delete<T>(url: string): Promise<T> {
     const response = await this.client.delete<T>(url);
     return response.data;
+  }
+
+  shouldUseMockFallback(): boolean {
+    return this.useMockFallback;
+  }
+
+  isServerAvailable(): boolean {
+    // This can be enhanced with an actual health check
+    return true;
   }
 }
 

@@ -21,9 +21,10 @@ import {
   DashboardStats, 
   InstructionsPanel, 
   PromptsPanel, 
-  SystemHealthPanel, 
   EditModals 
 } from '../components/dashboard';
+import { PromptViewModal } from '../components/prompts/PromptViewModal';
+import { InstructionViewModal } from '../components/instructions/InstructionViewModal';
 import toast from 'react-hot-toast';
 
 const Dashboard: React.FC = () => {
@@ -32,7 +33,6 @@ const Dashboard: React.FC = () => {
     setPrompts,
     setHealthStatus,
     instructionsLoading,
-    healthStatus,
   } = useAppStore();
   
   // State for dashboard data
@@ -52,6 +52,16 @@ const Dashboard: React.FC = () => {
   const [editingInstruction, setEditingInstruction] = useState<Instruction | null>(null);
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
   const [variables, setVariables] = useState<PromptVariable[]>([]);
+
+  // View modal states
+  const [viewingInstruction, setViewingInstruction] = useState<Instruction | null>(null);
+  const [isViewInstructionModalOpen, setIsViewInstructionModalOpen] = useState(false);
+  const [instructionExecutedTemplate, setInstructionExecutedTemplate] = useState<string>('');
+  const [isInstructionExecuted, setIsInstructionExecuted] = useState(false);
+  const [viewingPrompt, setViewingPrompt] = useState<Prompt | null>(null);
+  const [isViewPromptModalOpen, setIsViewPromptModalOpen] = useState(false);
+  const [promptExecutedTemplate, setPromptExecutedTemplate] = useState<string>('');
+  const [isPromptExecuted, setIsPromptExecuted] = useState(false);
 
   // Load more functions for infinite scrolling
   const loadMoreInstructions = useCallback(async () => {
@@ -234,6 +244,73 @@ const Dashboard: React.FC = () => {
     toast.success('Rating submitted successfully');
   };
 
+  // View handlers
+  const handleViewInstruction = (instruction: Instruction) => {
+    setViewingInstruction(instruction);
+    setIsInstructionExecuted(false);
+    setInstructionExecutedTemplate('');
+    requestAnimationFrame(() => {
+      setIsViewInstructionModalOpen(true);
+    });
+  };
+
+  const handleCloseInstructionViewModal = () => {
+    setIsViewInstructionModalOpen(false);
+    setTimeout(() => {
+      setViewingInstruction(null);
+      setIsInstructionExecuted(false);
+      setInstructionExecutedTemplate('');
+    }, 200);
+  };
+
+  const handleExecuteInstruction = (variableValues: Record<string, string>) => {
+    if (!viewingInstruction) return;
+    
+    let processedTemplate = viewingInstruction.content;
+    
+    viewingInstruction.variables?.forEach(variable => {
+      const value = variableValues[variable.name] || variable.defaultValue || '';
+      const regex = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+      processedTemplate = processedTemplate.replace(regex, value);
+    });
+    
+    setInstructionExecutedTemplate(processedTemplate);
+    setIsInstructionExecuted(true);
+  };
+
+  const handleViewPrompt = (prompt: Prompt) => {
+    setViewingPrompt(prompt);
+    setIsPromptExecuted(false);
+    setPromptExecutedTemplate('');
+    requestAnimationFrame(() => {
+      setIsViewPromptModalOpen(true);
+    });
+  };
+
+  const handleClosePromptViewModal = () => {
+    setIsViewPromptModalOpen(false);
+    setTimeout(() => {
+      setViewingPrompt(null);
+      setIsPromptExecuted(false);
+      setPromptExecutedTemplate('');
+    }, 200);
+  };
+
+  const handleExecutePrompt = (variableValues: Record<string, string>) => {
+    if (!viewingPrompt) return;
+    
+    let processedTemplate = viewingPrompt.content;
+    
+    viewingPrompt.variables?.forEach(variable => {
+      const value = variableValues[variable.name] || variable.defaultValue || '';
+      const regex = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+      processedTemplate = processedTemplate.replace(regex, value);
+    });
+    
+    setPromptExecutedTemplate(processedTemplate);
+    setIsPromptExecuted(true);
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -263,14 +340,14 @@ const Dashboard: React.FC = () => {
   const stats = [
     {
       name: 'Total Instructions',
-      value: '127',
+      value: allInstructions.length.toString(),
       change: '+12%',
       changeType: 'increase' as const,
       icon: FileText,
     },
     {
       name: 'Total Prompts',
-      value: '84',
+      value: allPrompts.length.toString(),
       change: '+8%',
       changeType: 'increase' as const,
       icon: MessageSquare,
@@ -332,6 +409,7 @@ const Dashboard: React.FC = () => {
               loading={instructionsScrollLoading}
               hasMore={instructionsHasMore}
               onLoadMore={loadMoreInstructions}
+              onView={handleViewInstruction}
               onEdit={handleEditInstruction}
               onDelete={handleDeleteInstruction}
               onRatingChange={handleInstructionRating}
@@ -345,6 +423,7 @@ const Dashboard: React.FC = () => {
               loading={promptsScrollLoading}
               hasMore={promptsHasMore}
               onLoadMore={loadMorePrompts}
+              onView={handleViewPrompt}
               onEdit={handleEditPrompt}
               onDelete={handleDeletePrompt}
               onRatingChange={handlePromptRating}
@@ -353,9 +432,9 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* System Health Panel */}
-        <ErrorBoundary>
-          <SystemHealthPanel healthStatus={healthStatus} />
-        </ErrorBoundary>
+        {/*<ErrorBoundary>
+           <SystemHealthPanel healthStatus={healthStatus} /> 
+        </ErrorBoundary>*/}
 
         {/* Edit Modals */}
         <ErrorBoundary>
@@ -377,6 +456,28 @@ const Dashboard: React.FC = () => {
             onSubmitPromptEdit={onPromptEditSubmit}
             variables={variables}
             setVariables={setVariables}
+          />
+        </ErrorBoundary>
+
+        {/* View Modals */}
+        <ErrorBoundary>
+          <InstructionViewModal
+            isOpen={isViewInstructionModalOpen}
+            onClose={handleCloseInstructionViewModal}
+            instruction={viewingInstruction}
+            isExecuted={isInstructionExecuted}
+            executedTemplate={instructionExecutedTemplate}
+            onExecute={handleExecuteInstruction}
+            onReset={() => setIsInstructionExecuted(false)}
+          />
+          <PromptViewModal
+            isOpen={isViewPromptModalOpen}
+            onClose={handleClosePromptViewModal}
+            prompt={viewingPrompt}
+            isExecuted={isPromptExecuted}
+            executedTemplate={promptExecutedTemplate}
+            onExecute={handleExecutePrompt}
+            onReset={() => setIsPromptExecuted(false)}
           />
         </ErrorBoundary>
       </div>

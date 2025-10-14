@@ -8,7 +8,7 @@
 export const ENVIRONMENT_CONFIG = {
   // Environment-specific API endpoints
   apiEndpoints: {
-    development: process.env.VITE_DEV_API_URL || 'http://localhost:3001/api/v1',
+    development: process.env.VITE_API_BASE_URL || 'http://localhost:3007/api/v1',
     qa: process.env.VITE_QA_API_URL || 'https://qa-api.yourcompany.com/api/v1',
     staging: process.env.VITE_STAGING_API_URL || 'https://staging-api.yourcompany.com/api/v1',
     production: process.env.VITE_PROD_API_URL || 'https://api.yourcompany.com/api/v1'

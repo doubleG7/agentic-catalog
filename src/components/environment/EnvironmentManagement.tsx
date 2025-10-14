@@ -43,15 +43,15 @@ export const EnvironmentBadge: React.FC<EnvironmentBadgeProps> = ({
   const getEnvironmentColor = (env: Environment) => {
     switch (env) {
       case Environment.DEVELOPMENT:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700';
       case Environment.QA:
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-700';
       case Environment.STAGING:
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700';
       case Environment.PRODUCTION:
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-700';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600';
     }
   };
 
@@ -111,9 +111,9 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
   const currentEnv = EnvironmentManager.getCurrentEnvironment();
 
   return (
-    <div className="bg-white rounded-lg border p-6">
+    <div className="card p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Deployment Pipeline</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Deployment Pipeline</h3>
         <div className="flex items-center gap-2">
           {item.isLocked ? (
             <div className="flex items-center gap-1 text-amber-600">
@@ -148,7 +148,7 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
                 />
                 
                 {envConfig && (
-                  <div className="text-xs text-gray-500 text-center">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
                     {envConfig.deployedAt && (
                       <div>
                         Deployed {new Date(envConfig.deployedAt).toLocaleDateString()}
@@ -166,7 +166,7 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => onPromote(env)}
-                      className="text-xs"
+                      className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
                     >
                       Promote
                     </Button>
@@ -177,7 +177,7 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
                       size="sm"
                       variant="outline"
                       onClick={() => onRollback(env)}
-                      className="text-xs text-red-600 hover:text-red-700"
+                      className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-red-600 hover:bg-gray-100 hover:border-gray-500 hover:text-red-700 dark:bg-gray-700 dark:border-gray-500 dark:text-red-400 dark:hover:bg-gray-600 dark:hover:border-gray-400 dark:hover:text-red-300 focus:font-bold focus:border-2 focus:border-red-500 dark:focus:border-red-400"
                     >
                       Rollback
                     </Button>
@@ -248,7 +248,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
       <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
         {/* Promotion Summary */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h4 className="font-medium text-gray-900 mb-2">Promotion Summary</h4>
+          <h4 className="font-medium text-gray-900 dark:text-white mb-2">Promotion Summary</h4>
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
               <EnvironmentBadge
@@ -330,6 +330,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
             variant="outline"
             onClick={onClose}
             disabled={isSubmitting}
+            className="bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
           >
             Cancel
           </Button>
@@ -357,14 +358,15 @@ export const VersionHistory: React.FC<VersionHistoryProps> = ({ item }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg border">
+    <div className="card">
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Version History</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Version History</h3>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => setShowDetails(!showDetails)}
+            className="bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
           >
             <Eye className="h-4 w-4 mr-2" />
             {showDetails ? 'Hide' : 'Show'} Details
@@ -382,7 +384,7 @@ export const VersionHistory: React.FC<VersionHistoryProps> = ({ item }) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
                       v{VersionManager.versionToString(promotion.version)}
                     </span>
                     <ArrowRight className="h-3 w-3 text-gray-400" />

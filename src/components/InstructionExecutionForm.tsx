@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import { Play, AlertCircle } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input, Textarea, Select } from './ui/Input';
-import { Prompt, PromptVariable } from '../types';
+import { Instruction, InstructionVariable } from '../types';
 
-interface PromptExecutionFormProps {
-  prompt: Prompt;
+interface InstructionExecutionFormProps {
+  instruction: Instruction;
   onExecute: (variableValues: Record<string, string>) => void;
   onCancel: () => void;
 }
 
-export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
-  prompt,
+export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> = ({
+  instruction,
   onExecute,
   onCancel,
 }) => {
   const [variableValues, setVariableValues] = useState<Record<string, string>>(() => {
     const initialValues: Record<string, string> = {};
-    prompt.variables?.forEach((variable) => {
+    instruction.variables?.forEach((variable) => {
       initialValues[variable.name] = variable.defaultValue || '';
     });
     return initialValues;
@@ -36,7 +36,7 @@ export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     
-    prompt.variables?.forEach((variable) => {
+    instruction.variables?.forEach((variable) => {
       if (variable.required && !variableValues[variable.name]?.trim()) {
         newErrors[variable.name] = `${variable.name} is required`;
       }
@@ -59,7 +59,7 @@ export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
     }
   };
 
-  const renderVariableInput = (variable: PromptVariable) => {
+  const renderVariableInput = (variable: InstructionVariable) => {
     const value = variableValues[variable.name] || '';
     const error = errors[variable.name];
 
@@ -127,19 +127,19 @@ export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Prompt Preview */}
+      {/* Instruction Preview */}
       <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 max-h-48 overflow-y-auto">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Prompt Template:</h3>
+        <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Instruction Content:</h3>
         <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-          {prompt.content}
+          {instruction.content}
         </div>
       </div>
 
       {/* Variables Form */}
-      {prompt.variables && prompt.variables.length > 0 ? (
+      {instruction.variables && instruction.variables.length > 0 ? (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Fill in the variables:</h3>
-          {prompt.variables.map((variable) => (
+          {instruction.variables.map((variable) => (
             <div key={variable.name} className="space-y-2">
               {renderVariableInput(variable)}
               {variable.description && variable.type !== 'boolean' && (
@@ -153,7 +153,7 @@ export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
           <div className="flex items-center">
             <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
             <span className="text-sm text-blue-800 dark:text-blue-200">
-              This prompt has no variables. It will be executed as-is.
+              This instruction has no variables. It will be used as-is.
             </span>
           </div>
         </div>
@@ -170,10 +170,10 @@ export const PromptExecutionForm: React.FC<PromptExecutionFormProps> = ({
         </Button>
         <Button 
           onClick={handleExecute} 
-          className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white focus:font-bold focus:border-2 focus:border-green-500 dark:focus:border-green-400"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white focus:font-bold focus:border-2 focus:border-blue-500 dark:focus:border-blue-400"
         >
           <Play className="h-4 w-4 mr-2" />
-          Run Prompt
+          Apply Instruction
         </Button>
       </div>
     </div>

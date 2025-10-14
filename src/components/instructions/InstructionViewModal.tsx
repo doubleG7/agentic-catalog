@@ -2,31 +2,31 @@ import React from 'react';
 import { Copy } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
-import { PromptExecutionForm } from '../PromptExecutionForm';
-import { Prompt } from '../../types';
+import { InstructionExecutionForm } from '../InstructionExecutionForm';
+import { Instruction } from '../../types';
 import toast from 'react-hot-toast';
 
-interface PromptViewModalProps {
+interface InstructionViewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  prompt: Prompt | null;
+  instruction: Instruction | null;
   isExecuted: boolean;
   executedTemplate: string;
   onExecute: (variableValues: Record<string, string>) => void;
   onReset: () => void;
 }
 
-export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
+export const InstructionViewModal: React.FC<InstructionViewModalProps> = React.memo(({
   isOpen,
   onClose,
-  prompt,
+  instruction,
   isExecuted,
   executedTemplate,
   onExecute,
   onReset,
 }) => {
-  // Don't render anything if no prompt
-  if (!prompt) return null;
+  // Don't render anything if no instruction
+  if (!instruction) return null;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(executedTemplate);
@@ -37,12 +37,12 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isExecuted ? 'Executed Prompt' : 'Execute Prompt'}
+      title={isExecuted ? 'Applied Instruction' : 'Apply Instruction'}
       size="xl"
     >
       {!isExecuted ? (
-        <PromptExecutionForm
-          prompt={prompt}
+        <InstructionExecutionForm
+          instruction={instruction}
           onExecute={onExecute}
           onCancel={onClose}
         />
@@ -50,7 +50,7 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Generated Output for: {prompt.title}
+              Applied Instruction: {instruction.title}
             </h3>
             <div className="flex space-x-2">
               <Button
@@ -81,4 +81,4 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
   );
 });
 
-PromptViewModal.displayName = 'PromptViewModal';
+InstructionViewModal.displayName = 'InstructionViewModal';

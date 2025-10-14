@@ -188,7 +188,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
               type="checkbox"
               id="isPublicInstructionEdit"
               {...registerInstructionEdit('isPublic')}
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
             />
             <label htmlFor="isPublicInstructionEdit" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
               Make this instruction public
@@ -311,7 +311,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
                       type="checkbox"
                       checked={variable.required}
                       onChange={(e) => updateVariable(index, 'required', e.target.checked)}
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Required</span>
                   </label>
@@ -343,7 +343,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
               type="checkbox"
               id="isPublicPromptEdit"
               {...registerPromptEdit('isPublic')}
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
             />
             <label htmlFor="isPublicPromptEdit" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
               Make this prompt public

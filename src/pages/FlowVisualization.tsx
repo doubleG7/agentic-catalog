@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import ReactFlow, {
@@ -253,12 +253,7 @@ const ConnectorNode = ({ data, selected, id }: { data: any; selected?: boolean; 
   );
 };
 
-// Define node types
-const nodeTypes = {
-  instruction: InstructionNode,
-  prompt: PromptNode,
-  connector: ConnectorNode,
-};
+
 
 interface Collection {
   id: string;
@@ -303,6 +298,13 @@ const FlowVisualization: React.FC = () => {
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [editingInstruction, setEditingInstruction] = useState<Instruction | null>(null);
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null);
+
+  // Memoize node types to prevent React Flow warning
+  const nodeTypes = useMemo(() => ({
+    instruction: InstructionNode,
+    prompt: PromptNode,
+    connector: ConnectorNode,
+  }), []);
   const [editVariables, setEditVariables] = useState<PromptVariable[]>([]);
 
   // Form hooks for editing

@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { 
-  Cloud, 
-  GitBranch, 
-  Clock,
-  Filter,
-  RefreshCw
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { 
-  EnvironmentPipeline, 
-  VersionHistory, 
   PromotionModal,
-  EnvironmentBadge 
 } from '../components/environment/EnvironmentManagement';
-import { EnvironmentManager, VersionManager } from '../utils/environment';
+import { EnvironmentManager } from '../utils/environment';
 import { 
   Environment, 
   PromotionStatus, 
-  VersionableItem,
-  PromotionRequest 
+  PromotionRequest,
+  VersionableItem 
 } from '../types/versioning';
 import { useAppStore } from '../store/useAppStore';
+import {
+  DeploymentsHeader,
+  EnvironmentOverview,
+  PendingPromotions,
+  DeploymentFilters,
+  DeploymentGrid
+} from '../components/deployments';
 import toast from 'react-hot-toast';
 
 // Extended interface for UI compatibility
@@ -215,204 +210,31 @@ const Deployments: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="md:flex md:items-center md:justify-between">
-        <div className="min-w-0 flex-1">
-          <motion.h2 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"
-          >
-            Deployments
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mt-1 text-sm text-gray-500"
-          >
-            Manage deployments across Development, QA, Staging, and Production environments
-          </motion.p>
-        </div>
-        <div className="mt-4 flex md:ml-4 md:mt-0 space-x-3">
-          <Button
-            variant="outline"
-            onClick={handleRefresh}
-            loading={isRefreshing}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
-      </div>
+      <DeploymentsHeader 
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+      />
 
       {/* Environment Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
-      >
-        {Object.entries(environmentStats).map(([env, count]) => (
-          <div key={env} className="bg-white overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <Cloud className="h-6 w-6 text-gray-400" />
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      {env.charAt(0).toUpperCase() + env.slice(1).toLowerCase()}
-                    </dt>
-                    <dd className="flex items-baseline">
-                      <div className="text-2xl font-semibold text-gray-900">
-                        {count}
-                      </div>
-                      <div className="ml-2 text-sm text-gray-500">
-                        deployed
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </motion.div>
+      <EnvironmentOverview environmentStats={environmentStats} />
 
       {/* Pending Promotions */}
-      {pendingPromotions.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-yellow-50 border border-yellow-200 rounded-lg p-6"
-        >
-          <div className="flex items-center mb-4">
-            <Clock className="h-5 w-5 text-yellow-600 mr-2" />
-            <h3 className="text-lg font-semibold text-yellow-900">
-              Pending Promotions ({pendingPromotions.length})
-            </h3>
-          </div>
-          <div className="space-y-3">
-            {pendingPromotions.map(({ item, environment, env }) => (
-              <div key={`${item.id}-${environment}`} className="flex items-center justify-between bg-white rounded-md p-3">
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{item.title}</h4>
-                    <p className="text-sm text-gray-500">
-                      {item.type} • Requested {env.deployedAt && new Date(env.deployedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <EnvironmentBadge
-                  environment={environment}
-                  status={PromotionStatus.PENDING_REVIEW}
-                  version={env.version}
-                />
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      <PendingPromotions pendingPromotions={pendingPromotions} />
 
       {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="flex flex-wrap items-center gap-4 bg-white p-4 rounded-lg shadow"
-      >
-        <div className="flex items-center space-x-2">
-          <Filter className="h-4 w-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Filters:</span>
-        </div>
-        
-        <select
-          value={filterEnvironment}
-          onChange={(e) => setFilterEnvironment(e.target.value as Environment | 'all')}
-          className="text-sm border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="all">All Environments</option>
-          {Object.values(Environment).map(env => (
-            <option key={env} value={env}>
-              {env.charAt(0).toUpperCase() + env.slice(1).toLowerCase()}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value as PromotionStatus | 'all')}
-          className="text-sm border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="all">All Statuses</option>
-          <option value={PromotionStatus.DEPLOYED}>Deployed</option>
-          <option value={PromotionStatus.PENDING_REVIEW}>Pending Review</option>
-          <option value={PromotionStatus.REJECTED}>Rejected</option>
-          <option value={PromotionStatus.DEPRECATED}>Deprecated</option>
-        </select>
-      </motion.div>
+      <DeploymentFilters
+        filterEnvironment={filterEnvironment}
+        filterStatus={filterStatus}
+        onEnvironmentChange={setFilterEnvironment}
+        onStatusChange={setFilterStatus}
+      />
 
       {/* Deployment Items */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="space-y-6"
-      >
-        {filteredItems.map((item, index) => (
-          <motion.div
-            key={`${item.type}-${item.id}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index }}
-            className="bg-white rounded-lg shadow"
-          >
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {item.type} • v{VersionManager.versionToString(item.version)}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {item.type}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <EnvironmentPipeline
-                item={item}
-                onPromote={(env) => handlePromote(item, env)}
-                onRollback={(env) => handleRollback(item, env)}
-              />
-            </div>
-
-            <div className="p-6 pt-0">
-              <VersionHistory item={item} />
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {filteredItems.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12"
-        >
-          <GitBranch className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">No items found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            No items match the current filters.
-          </p>
-        </motion.div>
-      )}
+      <DeploymentGrid
+        items={filteredItems}
+        onPromote={handlePromote}
+        onRollback={handleRollback}
+      />
 
       {/* Promotion Modal */}
       {selectedItem && (

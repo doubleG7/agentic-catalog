@@ -49,7 +49,7 @@ export const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ healthStat
               healthStatus.services.api === 'up' ? 'bg-green-500' : 'bg-red-500'
             }`}
           />
-          <span className="text-sm text-gray-300 dark:text-gray-300">API</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">API</span>
         </div>
       </div>
     </div>

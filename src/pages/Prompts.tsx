@@ -222,17 +222,24 @@ const Prompts: React.FC = () => {
   };
 
   const handleView = (prompt: Prompt) => {
+    // Batch state updates to prevent flashing
     setViewingPrompt(prompt);
-    setIsViewModalOpen(true);
     setIsExecuted(false);
     setExecutedTemplate('');
+    // Open modal after setting initial state
+    requestAnimationFrame(() => {
+      setIsViewModalOpen(true);
+    });
   };
 
   const handleCloseViewModal = () => {
     setIsViewModalOpen(false);
-    setViewingPrompt(null);
-    setIsExecuted(false);
-    setExecutedTemplate('');
+    // Clear state after modal close animation
+    setTimeout(() => {
+      setViewingPrompt(null);
+      setIsExecuted(false);
+      setExecutedTemplate('');
+    }, 200); // Match modal exit animation duration
   };
 
   const handleExecutePrompt = (variableValues: Record<string, string>) => {

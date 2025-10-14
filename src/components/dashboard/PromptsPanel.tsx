@@ -1,9 +1,7 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Star, Edit, Trash2, Loader2, Settings } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { RatingDisplay } from '../ui/RatingDisplay';
-import { StarRating } from '../ui/StarRating';
+import { Loader2 } from 'lucide-react';
+import { PromptCard } from '../prompts/PromptCard';
 import { Prompt } from '../../types';
 
 interface PromptsPanelProps {
@@ -11,6 +9,7 @@ interface PromptsPanelProps {
   loading: boolean;
   hasMore: boolean;
   onLoadMore: () => void;
+  onView: (prompt: Prompt) => void;
   onEdit: (prompt: Prompt) => void;
   onDelete: (id: string) => void;
   onRatingChange?: (id: string, rating: number) => void;
@@ -21,18 +20,11 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
   loading,
   hasMore,
   onLoadMore,
+  onView,
   onEdit,
   onDelete,
   onRatingChange,
 }) => {
-  const [showRatingInputs, setShowRatingInputs] = useState<Record<string, boolean>>({});
-
-  const handleRatingSubmit = (id: string, rating: number) => {
-    if (onRatingChange) {
-      onRatingChange(id, rating);
-    }
-    setShowRatingInputs(prev => ({ ...prev, [id]: false }));
-  };
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
@@ -59,107 +51,19 @@ export const PromptsPanel: React.FC<PromptsPanelProps> = ({
       </div>
       <div 
         ref={scrollRef}
-        className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800 dark:hover:scrollbar-thumb-gray-500"
+        className="h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800 dark:hover:scrollbar-thumb-gray-500"
         onScroll={handleScroll}
       >
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {prompts.map((prompt) => (
-            <div key={prompt.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <Link
-                    to={`/prompts/${prompt.id}`}
-                    className="text-sm font-medium text-gray-900 hover:text-primary-600 dark:text-gray-100 dark:hover:text-primary-400"
-                  >
-                    {prompt.title}
-                  </Link>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                    {prompt.description}
-                  </p>
-                  <div className="flex items-center mt-2 space-x-2">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      {prompt.category}
-                    </span>
-                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                      <Clock className="h-3 w-3 mr-1" />
-                      {new Date(prompt.updatedAt).toLocaleDateString()}
-                    </div>
-                    {prompt.variables && prompt.variables.length > 0 && (
-                      <div className="flex items-center">
-                        <Settings className="h-3 w-3 text-blue-500 dark:text-blue-400 mr-1" />
-                        <span className="text-xs text-blue-600 dark:text-blue-400">
-                          {prompt.variables.length} var{prompt.variables.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                    )}
-                    {prompt.isPublic && (
-                      <div className="flex items-center text-xs text-green-600 dark:text-green-400">
-                        <Star className="h-3 w-3 mr-1" />
-                        Public
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center mt-3 space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onEdit(prompt);
-                      }}
-                      className="h-7 px-2 text-xs"
-                    >
-                      <Edit className="h-3 w-3 mr-1" />
-                      Edit
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onDelete(prompt.id);
-                      }}
-                      className="h-7 px-2 text-xs text-red-600 hover:text-red-700 hover:border-red-300 dark:text-red-400 dark:hover:text-red-300 dark:hover:border-red-500"
-                    >
-                      <Trash2 className="h-3 w-3 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end space-y-2">
-                  {prompt.rating && (
-                    <RatingDisplay
-                      rating={prompt.rating.average}
-                      totalRatings={prompt.rating.count}
-                      size="sm"
-                      showCount
-                    />
-                  )}
-                  {!showRatingInputs[prompt.id] && onRatingChange && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowRatingInputs(prev => ({ ...prev, [prompt.id]: true }));
-                      }}
-                      className="text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"
-                    >
-                      {prompt.rating?.userRating ? 'Update' : 'Rate'}
-                    </button>
-                  )}
-                  {showRatingInputs[prompt.id] && (
-                    <div className="bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-lg">
-                      <StarRating
-                        rating={prompt.rating?.userRating || 0}
-                        onRatingChange={(rating) => handleRatingSubmit(prompt.id, rating)}
-                        size="sm"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
+            <div key={prompt.id} className="px-6 py-4">
+              <PromptCard
+                prompt={prompt}
+                onView={onView}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onRatingChange={onRatingChange}
+              />
             </div>
           ))}
           {loading && (

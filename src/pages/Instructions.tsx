@@ -14,6 +14,7 @@ import {
   InstructionsFilters,
   InstructionsGrid,
   InstructionFormModal,
+  InstructionViewModal,
 } from '../components/instructions';
 import toast from 'react-hot-toast';
 
@@ -35,6 +36,10 @@ const Instructions: React.FC = () => {
   const [editingInstruction, setEditingInstruction] = useState<Instruction | null>(null);
   const [variables, setVariables] = useState<InstructionVariable[]>([]);
   const [editVariables, setEditVariables] = useState<InstructionVariable[]>([]);
+  const [viewingInstruction, setViewingInstruction] = useState<Instruction | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [executedTemplate, setExecutedTemplate] = useState<string>('');
+  const [isExecuted, setIsExecuted] = useState(false);
 
   interface ExtendedCreateInstructionForm extends CreateInstructionRequest {
     author?: string;
@@ -305,7 +310,40 @@ const Instructions: React.FC = () => {
   };
 
   const handleView = (instruction: Instruction) => {
-    window.location.href = `/instructions/${instruction.id}`;
+    // Batch state updates to prevent flashing
+    setViewingInstruction(instruction);
+    setIsExecuted(false);
+    setExecutedTemplate('');
+    // Open modal after setting initial state
+    requestAnimationFrame(() => {
+      setIsViewModalOpen(true);
+    });
+  };
+
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
+    // Clear state after modal close animation
+    setTimeout(() => {
+      setViewingInstruction(null);
+      setIsExecuted(false);
+      setExecutedTemplate('');
+    }, 200); // Match modal exit animation duration
+  };
+
+  const handleExecuteInstruction = (variableValues: Record<string, string>) => {
+    if (!viewingInstruction) return;
+    
+    let processedTemplate = viewingInstruction.content;
+    
+    // Replace variables in the template
+    viewingInstruction.variables?.forEach(variable => {
+      const value = variableValues[variable.name] || variable.defaultValue || '';
+      const regex = new RegExp(`\\{\\{${variable.name}\\}\\}`, 'g');
+      processedTemplate = processedTemplate.replace(regex, value);
+    });
+    
+    setExecutedTemplate(processedTemplate);
+    setIsExecuted(true);
   };
 
   if (instructionsLoading) {
@@ -375,6 +413,17 @@ const Instructions: React.FC = () => {
         onRemoveVariable={removeEditVariable}
         onUpdateVariable={updateEditVariable}
         submitButtonText="Update Instruction"
+      />
+
+      {/* View/Execute Modal */}
+      <InstructionViewModal
+        isOpen={isViewModalOpen}
+        onClose={handleCloseViewModal}
+        instruction={viewingInstruction}
+        isExecuted={isExecuted}
+        executedTemplate={executedTemplate}
+        onExecute={handleExecuteInstruction}
+        onReset={() => setIsExecuted(false)}
       />
     </div>
   );
