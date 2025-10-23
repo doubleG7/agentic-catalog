@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   FileText, 
   MessageSquare, 
   GitBranch, 
-  Plus, 
   Users
 } from 'lucide-react';
-import { Button } from '../components/ui/Button';
 import { ErrorBoundary, ApiErrorBoundary } from '../components/ErrorBoundary';
 import { PageLoading } from '../components/LoadingState';
 import { instructionsApi, promptsApi, healthApi } from '../api/services';
@@ -374,25 +372,20 @@ const Dashboard: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="space-y-8">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
         {/* Header */}
-        <div className="md:flex md:items-center md:justify-between">
-          <div className="min-w-0 flex-1">
-            <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
-              Dashboard
-            </h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Welcome back! Here's what's happening with your prompts and instructions.
-            </p>
-          </div>
-          <div className="mt-4 flex md:ml-4 md:mt-0">
-            <Link to="/instructions">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                New Instruction
-              </Button>
-            </Link>
-          </div>
+        <div>
+          <h2 className="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
+            Dashboard
+          </h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            Welcome back! Here's what's happening with your prompts and instructions.
+          </p>
         </div>
 
         {/* Stats Component */}
@@ -480,7 +473,7 @@ const Dashboard: React.FC = () => {
             onReset={() => setIsPromptExecuted(false)}
           />
         </ErrorBoundary>
-      </div>
+      </motion.div>
     </ErrorBoundary>
   );
 };

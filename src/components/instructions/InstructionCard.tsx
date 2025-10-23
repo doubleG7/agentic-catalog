@@ -122,29 +122,27 @@ export const InstructionCard: React.FC<InstructionCardProps> = ({
       {/* Rating Section */}
       <div className="mt-4">
         <div className="flex items-center space-x-2">
-          {onRatingChange ? (
+          {onRatingChange && instruction.rating ? (
             <div className="flex items-center space-x-2">
               <StarRating
-                rating={instruction.rating?.userRating || 0}
+                rating={instruction.rating.userRating || instruction.rating.average || 0}
                 onRatingChange={handleRatingSubmit}
                 size="sm"
               />
-              {instruction.rating && instruction.rating.count > 0 && (
+              {instruction.rating.count > 0 && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   ({instruction.rating.count})
                 </span>
               )}
             </div>
-          ) : (
-            instruction.rating && (
-              <RatingDisplay
-                rating={instruction.rating.average}
-                totalRatings={instruction.rating.count}
-                size="sm"
-                showCount
-              />
-            )
-          )}
+          ) : instruction.rating ? (
+            <RatingDisplay
+              rating={instruction.rating.average}
+              totalRatings={instruction.rating.count}
+              size="sm"
+              showCount
+            />
+          ) : null}
         </div>
       </div>
     </div>

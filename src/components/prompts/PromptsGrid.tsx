@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { MessageSquare, Plus } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Prompt } from '../../types';
@@ -43,15 +44,27 @@ export const PromptsGrid: React.FC<PromptsGridProps> = ({
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {prompts.map((prompt) => (
-        <PromptCard
+      {prompts.map((prompt, index) => (
+        <motion.div
           key={prompt.id}
-          prompt={prompt}
-          onView={onView}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onRatingChange={onRatingChange}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 0.5, 
+            delay: index * 0.1,
+            ease: [0.25, 0.46, 0.45, 0.94]
+          }}
+          whileHover={{ y: -5 }}
+        >
+          <PromptCard
+            key={prompt.id}
+            prompt={prompt}
+            onView={onView}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onRatingChange={onRatingChange}
+          />
+        </motion.div>
       ))}
     </div>
   );

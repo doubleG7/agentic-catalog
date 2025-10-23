@@ -91,6 +91,7 @@ interface EnvironmentPipelineProps {
   item: VersionableItem;
   onPromote: (toEnvironment: Environment) => void;
   onRollback: (environment: Environment) => void;
+  pendingPromotions?: Array<{ itemId: string; toEnvironment: Environment; status: PromotionStatus }>;
 }
 
 /**
@@ -99,7 +100,8 @@ interface EnvironmentPipelineProps {
 export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
   item,
   onPromote,
-  onRollback
+  onRollback,
+  pendingPromotions = []
 }) => {
   const environments = [
     Environment.DEVELOPMENT,
@@ -109,6 +111,15 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
   ];
 
   const currentEnv = EnvironmentManager.getCurrentEnvironment();
+  
+  // Check if there's a pending promotion for this item to the target environment
+  const hasPendingPromotion = (targetEnv: Environment) => {
+    return pendingPromotions.some(
+      p => p.itemId === item.id && 
+           p.toEnvironment === targetEnv && 
+           p.status === PromotionStatus.PENDING_REVIEW
+    );
+  };
 
   return (
     <div className="card p-6">
@@ -133,9 +144,14 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
         {environments.map((env, index) => {
           const envConfig = item.environments[env];
           const isDeployed = envConfig?.status === PromotionStatus.DEPLOYED;
+          const isPending = envConfig?.status === PromotionStatus.PENDING_REVIEW;
           const canPromoteHere = index > 0 && 
             EnvironmentManager.canPromote(environments[index - 1], env) &&
             !item.isLocked;
+          
+          // Check if previous environment is deployed (for drawing connection line)
+          const prevEnv = index > 0 ? environments[index - 1] : null;
+          const prevEnvDeployed = prevEnv ? item.environments[prevEnv]?.status === PromotionStatus.DEPLOYED : false;
 
           return (
             <React.Fragment key={env}>
@@ -160,16 +176,26 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
                   </div>
                 )}
 
-                <div className="flex gap-1">
+                <div className="flex flex-col gap-1">
                   {canPromoteHere && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onPromote(env)}
-                      className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
-                    >
-                      Promote
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onPromote(env)}
+                        disabled={hasPendingPromotion(env)}
+                        className="h-7 px-2 text-xs bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-50 dark:disabled:hover:bg-gray-700"
+                        title={hasPendingPromotion(env) ? 'Promotion already pending approval' : ''}
+                      >
+                        Promote
+                      </Button>
+                      {hasPendingPromotion(env) && (
+                        <span className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          Pending approval
+                        </span>
+                      )}
+                    </>
                   )}
                   
                   {isDeployed && envConfig?.rollbackVersion && (
@@ -186,7 +212,16 @@ export const EnvironmentPipeline: React.FC<EnvironmentPipelineProps> = ({
               </div>
 
               {index < environments.length - 1 && (
-                <ArrowRight className="h-5 w-5 text-gray-400" />
+                <div className="relative flex items-center">
+                  <ArrowRight className={`h-5 w-5 ${
+                    prevEnvDeployed && (isDeployed || isPending)
+                      ? 'text-green-500 dark:text-green-400' 
+                      : 'text-gray-400 dark:text-gray-600'
+                  }`} />
+                  {prevEnvDeployed && (isDeployed || isPending) && (
+                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-green-500 dark:bg-green-400 -z-10" />
+                  )}
+                </div>
               )}
             </React.Fragment>
           );
@@ -247,7 +282,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title="Request Promotion" size="lg">
       <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
         {/* Promotion Summary */}
-        <div className="bg-gray-50 rounded-lg p-4">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
           <h4 className="font-medium text-gray-900 dark:text-white mb-2">Promotion Summary</h4>
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
@@ -256,7 +291,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
                 status={PromotionStatus.DEPLOYED}
                 version={item.version}
               />
-              <ArrowRight className="h-4 w-4 text-gray-400" />
+              <ArrowRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               <EnvironmentBadge
                 environment={toEnvironment}
                 status={PromotionStatus.PENDING_REVIEW}
@@ -269,18 +304,18 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
         {/* Version Information */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Current Version
             </label>
-            <div className="text-lg font-mono bg-gray-100 px-3 py-2 rounded">
+            <div className="text-lg font-mono bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 rounded border border-gray-200 dark:border-gray-700">
               {VersionManager.versionToString(item.version)}
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Target Environment
             </label>
-            <div className="text-lg font-semibold px-3 py-2">
+            <div className="text-lg font-semibold text-gray-900 dark:text-white px-3 py-2">
               {toEnvironment.toUpperCase()}
             </div>
           </div>
@@ -289,14 +324,14 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
         {/* Required Approvers */}
         {requiredApprovers.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Required Approvers
             </label>
             <div className="flex flex-wrap gap-2">
               {requiredApprovers.map(role => (
                 <span 
                   key={role} 
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                 >
                   {role.replace('_', ' ')}
                 </span>
@@ -308,23 +343,43 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
         {/* Reason */}
         <Textarea
           label="Reason for Promotion *"
-          {...register('reason', { required: 'Reason is required' })}
+          {...register('reason', { 
+            required: 'Reason is required',
+            minLength: {
+              value: 10,
+              message: 'Reason must be at least 10 characters'
+            },
+            maxLength: {
+              value: 1000,
+              message: 'Reason must not exceed 1000 characters'
+            }
+          })}
           error={errors.reason?.message as string}
-          placeholder="Explain why this promotion is needed..."
+          placeholder="Explain why this promotion is needed (minimum 10 characters)..."
           rows={3}
         />
 
         {/* Changes Summary */}
         <Textarea
           label="Changes Summary *"
-          {...register('changesSummary', { required: 'Changes summary is required' })}
+          {...register('changesSummary', { 
+            required: 'Changes summary is required',
+            minLength: {
+              value: 10,
+              message: 'Changes summary must be at least 10 characters'
+            },
+            maxLength: {
+              value: 2000,
+              message: 'Changes summary must not exceed 2000 characters'
+            }
+          })}
           error={errors.changesSummary?.message as string}
-          placeholder="Summarize the changes being promoted..."
+          placeholder="Summarize the changes being promoted (minimum 10 characters)..."
           rows={4}
         />
 
         {/* Actions */}
-        <div className="flex justify-end space-x-3 pt-4">
+        <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             type="button"
             variant="outline"
@@ -337,7 +392,7 @@ export const PromotionModal: React.FC<PromotionModalProps> = ({
           <Button
             type="submit"
             loading={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
           >
             Request Promotion
           </Button>

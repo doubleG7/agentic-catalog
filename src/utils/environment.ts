@@ -271,6 +271,8 @@ export class ReleaseManager {
     const currentEnv = EnvironmentManager.getCurrentEnvironment();
     const promotionId = `promo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+    console.log(`Creating promotion request with ID: ${promotionId}`);
+
     const request: PromotionRequest = {
       id: promotionId,
       itemId: item.id,
@@ -293,6 +295,8 @@ export class ReleaseManager {
       userRole: role as any,
       status: 'pending'
     }));
+
+    console.log(`Promotion request created: ${promotionId}, to environment: ${toEnvironment}`);
 
     return request;
   }

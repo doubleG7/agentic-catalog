@@ -114,29 +114,27 @@ export const PromptCard: React.FC<PromptCardProps> = ({
       {/* Rating Section */}
       <div className="mt-4">
         <div className="flex items-center space-x-2">
-          {onRatingChange ? (
+          {onRatingChange && prompt.rating ? (
             <div className="flex items-center space-x-2">
               <StarRating
-                rating={prompt.rating?.userRating || 0}
+                rating={prompt.rating.userRating || prompt.rating.average || 0}
                 onRatingChange={handleRatingSubmit}
                 size="sm"
               />
-              {prompt.rating && prompt.rating.count > 0 && (
+              {prompt.rating.count > 0 && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   ({prompt.rating.count})
                 </span>
               )}
             </div>
-          ) : (
-            prompt.rating && (
-              <RatingDisplay
-                rating={prompt.rating.average}
-                totalRatings={prompt.rating.count}
-                size="sm"
-                showCount
-              />
-            )
-          )}
+          ) : prompt.rating ? (
+            <RatingDisplay
+              rating={prompt.rating.average}
+              totalRatings={prompt.rating.count}
+              size="sm"
+              showCount
+            />
+          ) : null}
         </div>
       </div>
     </div>

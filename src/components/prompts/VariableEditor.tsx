@@ -62,10 +62,10 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
               onChange={(e) => onUpdate(index, 'type', e.target.value)}
               className="input"
             >
-              <option value="text">Text</option>
-              <option value="number">Number</option>
-              <option value="boolean">Boolean</option>
-              <option value="select">Select</option>
+              <option value="TEXT">Text</option>
+              <option value="NUMBER">Number</option>
+              <option value="BOOLEAN">Boolean</option>
+              <option value="SELECT">Select</option>
             </select>
           </div>
           

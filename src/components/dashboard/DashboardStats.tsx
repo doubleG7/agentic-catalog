@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 
 interface Stat {
@@ -16,10 +17,21 @@ interface DashboardStatsProps {
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => {
+      {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
-          <div key={stat.name} className="card p-6 hover:shadow-lg transition-shadow">
+          <motion.div
+            key={stat.name}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ 
+              duration: 0.5, 
+              delay: index * 0.1,
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
+            whileHover={{ y: -5 }}
+            className="card p-6 hover:shadow-lg transition-shadow"
+          >
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <Icon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
@@ -51,7 +63,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ stats }) => {
                 </dl>
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>

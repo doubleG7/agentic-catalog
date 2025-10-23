@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { instructionsApi } from '../api/services';
+import { instructionsApi, ratingsApi } from '../api/services';
 import { 
   Instruction,
   CreateInstructionRequest,
   UpdateInstructionRequest,
   InstructionVariable
 } from '../types';
-import { useAppStore, useFilteredInstructions } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import {
   InstructionsHeader,
   InstructionsFilters,
@@ -19,17 +19,16 @@ import {
 import toast from 'react-hot-toast';
 
 const Instructions: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const instructions = useFilteredInstructions();
   const {
+    instructions,
     instructionsLoading,
     setInstructions,
     setInstructionsLoading,
-    searchQuery,
-    selectedCategory,
-    setSearchQuery,
-    setSelectedCategory,
   } = useAppStore();
+  
+  const [filteredInstructions, setFilteredInstructions] = useState<Instruction[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -125,18 +124,12 @@ const Instructions: React.FC = () => {
 
   useEffect(() => {
     fetchInstructions();
-  }, [searchParams]);
+  }, []);
 
   const fetchInstructions = async () => {
     try {
       setInstructionsLoading(true);
-      const params = {
-        search: searchParams.get('search') || undefined,
-        category: searchParams.get('category') || undefined,
-        page: 1,
-        limit: 20,
-      };
-      const response = await instructionsApi.getAll(params);
+      const response = await instructionsApi.getAll({ page: 1, limit: 100 });
       setInstructions(response.data);
     } catch (error) {
       toast.error('Failed to fetch instructions');
@@ -145,27 +138,33 @@ const Instructions: React.FC = () => {
     }
   };
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (query) {
-      newSearchParams.set('search', query);
-    } else {
-      newSearchParams.delete('search');
-    }
-    setSearchParams(newSearchParams);
-  };
+  // Filter instructions based on search and category, sorted by highest ratings
+  useEffect(() => {
+    let filtered = instructions;
 
-  const handleCategoryFilter = (category: string) => {
-    setSelectedCategory(category);
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (category) {
-      newSearchParams.set('category', category);
-    } else {
-      newSearchParams.delete('category');
+    if (searchTerm) {
+      filtered = filtered.filter(instruction =>
+        instruction.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        instruction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        instruction.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
-    setSearchParams(newSearchParams);
-  };
+
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(instruction =>
+        instruction.category === selectedCategory
+      );
+    }
+
+    // Sort by highest average rating
+    filtered.sort((a, b) => {
+      const aRating = a.rating?.average || 0;
+      const bRating = b.rating?.average || 0;
+      return bRating - aRating;
+    });
+
+    setFilteredInstructions(filtered);
+  }, [instructions, searchTerm, selectedCategory]);
 
   const onCreateSubmit = async (data: any) => {
     try {
@@ -291,22 +290,66 @@ const Instructions: React.FC = () => {
     }
   };
 
-  const handleRating = (id: string, rating: number) => {
-    // Update the instruction's rating in the local state
-    const updatedInstructions = instructions.map(instruction => 
-      instruction.id === id 
-        ? {
-            ...instruction,
-            rating: {
-              average: rating, // In a real app, this would be calculated server-side
-              count: (instruction.rating?.count || 0) + 1,
-              userRating: rating
+  const handleRating = async (id: string, rating: number) => {
+    try {
+      console.log('=== RATING DEBUG ===');
+      console.log('Submitting rating:', { id, rating });
+      console.log('API endpoint:', `/api/v1/ratings/instructions/${id}`);
+      
+      // Optimistic update - show stars filled immediately
+      const optimisticInstructions = instructions.map(instruction => 
+        instruction.id === id 
+          ? {
+              ...instruction,
+              rating: {
+                average: instruction.rating?.average || rating,
+                count: instruction.rating?.count || 1,
+                userRating: rating
+              }
             }
-          }
-        : instruction
-    );
-    setInstructions(updatedInstructions);
-    toast.success('Rating submitted successfully');
+          : instruction
+      );
+      setInstructions(optimisticInstructions);
+      
+      // Call the backend API to save the rating
+      const response = await ratingsApi.rateInstruction(id, rating);
+      
+      console.log('Rating response:', response);
+      console.log('Response keys:', Object.keys(response));
+      
+      // The response object has stats at the top level (not nested in data)
+      const stats = response.stats || (response as any).data?.stats;
+      
+      if (response.success && stats) {
+        console.log('Stats found:', stats);
+        // Update the instruction's rating with stats from server
+        const updatedInstructions = instructions.map(instruction => 
+          instruction.id === id 
+            ? {
+                ...instruction,
+                rating: {
+                  average: stats.average,
+                  count: stats.count,
+                  userRating: stats.userRating || rating
+                }
+              }
+            : instruction
+        );
+        setInstructions(updatedInstructions);
+        toast.success('Rating submitted successfully');
+      } else {
+        console.warn('Response missing success or stats:', response);
+        toast.error('Rating response incomplete');
+      }
+    } catch (error) {
+      console.error('=== RATING ERROR ===');
+      console.error('Failed to submit rating:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      toast.error('Failed to submit rating. Please try again.');
+    }
   };
 
   const handleView = (instruction: Instruction) => {
@@ -355,18 +398,23 @@ const Instructions: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       <InstructionsHeader onCreateClick={() => setIsCreateModalOpen(true)} />
       
       <InstructionsFilters
-        searchQuery={searchQuery}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         selectedCategory={selectedCategory}
-        onSearchChange={handleSearch}
-        onCategoryChange={handleCategoryFilter}
+        onCategoryChange={setSelectedCategory}
       />
 
       <InstructionsGrid
-        instructions={instructions}
+        instructions={filteredInstructions}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -425,7 +473,7 @@ const Instructions: React.FC = () => {
         onExecute={handleExecuteInstruction}
         onReset={() => setIsExecuted(false)}
       />
-    </div>
+    </motion.div>
   );
 };
 

@@ -11,6 +11,7 @@ import {
   PaginatedResponse,
   HealthStatus,
 } from '../types';
+import { PromotionRequest, Environment } from '../types/versioning';
 
 // Determine if we should use mock data based on environment variable
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
@@ -310,7 +311,225 @@ export class HealthApi {
   }
 }
 
+/**
+ * Promotion API for deployment workflow
+ */
+export class PromotionsApi {
+  async getPending(): Promise<ApiResponse<PromotionRequest[]>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<PromotionRequest[]>>('/promotions/pending'),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return { data: [], success: true };
+      }
+    );
+  }
+
+  async getHistory(itemType: string, itemId: string): Promise<ApiResponse<PromotionRequest[]>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<PromotionRequest[]>>(`/promotions/history/${itemType}/${itemId}`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return { data: [], success: true };
+      }
+    );
+  }
+
+  async create(data: {
+    itemType: 'INSTRUCTION' | 'PROMPT';
+    itemId: string;
+    fromEnvironment: Environment;
+    toEnvironment: Environment;
+    reason: string;
+    changesSummary: string;
+    scheduledAt?: string;
+  }): Promise<ApiResponse<PromotionRequest>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<PromotionRequest>>('/promotions', data),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const newPromotion: PromotionRequest = {
+          id: Math.random().toString(36).substr(2, 9),
+          itemId: data.itemId,
+          itemType: data.itemType.toLowerCase() as 'instruction' | 'prompt',
+          fromEnvironment: data.fromEnvironment,
+          toEnvironment: data.toEnvironment,
+          version: { major: 1, minor: 0, patch: 0 },
+          requestedBy: 'current-user',
+          requestedAt: new Date().toISOString(),
+          reason: data.reason,
+          changesSummary: data.changesSummary,
+          approvals: [],
+          status: import('../types/versioning').then(m => m.PromotionStatus.PENDING_REVIEW) as any,
+          scheduledDeployment: data.scheduledAt,
+        };
+        return { data: newPromotion, success: true, message: 'Promotion request created successfully' };
+      }
+    );
+  }
+
+  async approve(id: string, comments?: string): Promise<ApiResponse<PromotionRequest>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<PromotionRequest>>(`/promotions/${id}/approve`, { comments }),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        return { 
+          data: {} as PromotionRequest, 
+          success: true, 
+          message: 'Promotion approved successfully' 
+        };
+      }
+    );
+  }
+
+  async reject(id: string, comments: string): Promise<ApiResponse<PromotionRequest>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<PromotionRequest>>(`/promotions/${id}/reject`, { comments }),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        return { 
+          data: {} as PromotionRequest, 
+          success: true, 
+          message: 'Promotion rejected successfully' 
+        };
+      }
+    );
+  }
+
+  async deploy(id: string): Promise<ApiResponse<PromotionRequest>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<PromotionRequest>>(`/promotions/${id}/deploy`, {}),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return { 
+          data: {} as PromotionRequest, 
+          success: true, 
+          message: 'Deployment completed successfully' 
+        };
+      }
+    );
+  }
+}
+
+/**
+ * Ratings API for rating instructions, prompts, and collections
+ */
+export class RatingsApi {
+  async rateInstruction(id: string, rating: number, comment?: string): Promise<ApiResponse<any>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<any>>(`/ratings/instructions/${id}`, { rating, comment }),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return { 
+          data: { rating, comment }, 
+          stats: { average: rating, count: 1, userRating: rating },
+          success: true, 
+          message: 'Rating saved successfully' 
+        };
+      }
+    );
+  }
+
+  async ratePrompt(id: string, rating: number, comment?: string): Promise<ApiResponse<any>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<any>>(`/ratings/prompts/${id}`, { rating, comment }),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return { 
+          data: { rating, comment }, 
+          stats: { average: rating, count: 1, userRating: rating },
+          success: true, 
+          message: 'Rating saved successfully' 
+        };
+      }
+    );
+  }
+
+  async rateCollection(id: string, rating: number, comment?: string): Promise<ApiResponse<any>> {
+    return apiCallWithFallback(
+      async () => apiClient.post<ApiResponse<any>>(`/ratings/collections/${id}`, { rating, comment }),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return { 
+          data: { rating, comment }, 
+          stats: { average: rating, count: 1, userRating: rating },
+          success: true, 
+          message: 'Rating saved successfully' 
+        };
+      }
+    );
+  }
+
+  async getInstructionStats(id: string): Promise<ApiResponse<{ average: number; count: number; userRating?: number }>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<any>>(`/ratings/instructions/${id}/stats`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        return { 
+          data: { average: 0, count: 0 },
+          success: true 
+        };
+      }
+    );
+  }
+
+  async getPromptStats(id: string): Promise<ApiResponse<{ average: number; count: number; userRating?: number }>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<any>>(`/ratings/prompts/${id}/stats`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        return { 
+          data: { average: 0, count: 0 },
+          success: true 
+        };
+      }
+    );
+  }
+
+  async getCollectionStats(id: string): Promise<ApiResponse<{ average: number; count: number; userRating?: number }>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<any>>(`/ratings/collections/${id}/stats`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        return { 
+          data: { average: 0, count: 0 },
+          success: true 
+        };
+      }
+    );
+  }
+
+  async deleteRating(itemType: 'instruction' | 'prompt' | 'collection', id: string): Promise<ApiResponse<void>> {
+    return apiCallWithFallback(
+      async () => apiClient.delete<ApiResponse<void>>(`/ratings/${itemType}/${id}`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 400));
+        return { 
+          data: undefined,
+          success: true, 
+          message: 'Rating deleted successfully' 
+        };
+      }
+    );
+  }
+
+  async getMyRatings(): Promise<ApiResponse<any[]>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<any[]>>('/ratings/my-ratings'),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        return { 
+          data: [],
+          success: true 
+        };
+      }
+    );
+  }
+}
+
 // Export singleton instances
 export const instructionsApi = new InstructionsApi();
 export const promptsApi = new PromptsApi();
 export const healthApi = new HealthApi();
+export const promotionsApi = new PromotionsApi();
+export const ratingsApi = new RatingsApi();

@@ -17,6 +17,7 @@ import {
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
 import { ThemeToggle } from './ThemeToggle';
+import UserMenu from './UserMenu';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface LayoutProps {
@@ -179,6 +180,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Button variant="ghost" size="sm">
                 <Bell className="h-5 w-5" />
               </Button>
+              <UserMenu />
             </div>
           </div>
         </div>

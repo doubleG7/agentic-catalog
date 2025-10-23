@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { promptsApi } from '../api/services';
+import { promptsApi, ratingsApi } from '../api/services';
 import { 
   Prompt,
   CreatePromptRequest,
   UpdatePromptRequest,
   PromptVariable
 } from '../types';
-import { useAppStore, useFilteredPrompts } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import {
   PromptsHeader,
   PromptsFilters,
@@ -19,17 +19,18 @@ import {
 import toast from 'react-hot-toast';
 
 const Prompts: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const prompts = useFilteredPrompts();
   const {
+    prompts,
     promptsLoading,
     setPrompts,
     setPromptsLoading,
-    searchQuery,
-    selectedCategory,
-    setSearchQuery,
-    setSelectedCategory,
+    addPrompt,
+    updatePrompt,
   } = useAppStore();
+  
+  const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -57,18 +58,12 @@ const Prompts: React.FC = () => {
 
   useEffect(() => {
     fetchPrompts();
-  }, [searchParams]);
+  }, []);
 
   const fetchPrompts = async () => {
     try {
       setPromptsLoading(true);
-      const params = {
-        search: searchParams.get('search') || undefined,
-        category: searchParams.get('category') || undefined,
-        page: 1,
-        limit: 20,
-      };
-      const response = await promptsApi.getAll(params);
+      const response = await promptsApi.getAll({ page: 1, limit: 100 });
       setPrompts(response.data);
     } catch (error) {
       toast.error('Failed to fetch prompts');
@@ -77,27 +72,33 @@ const Prompts: React.FC = () => {
     }
   };
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (query) {
-      newSearchParams.set('search', query);
-    } else {
-      newSearchParams.delete('search');
-    }
-    setSearchParams(newSearchParams);
-  };
+  // Filter prompts based on search and category, sorted by highest ratings
+  useEffect(() => {
+    let filtered = prompts;
 
-  const handleCategoryFilter = (category: string) => {
-    setSelectedCategory(category);
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (category) {
-      newSearchParams.set('category', category);
-    } else {
-      newSearchParams.delete('category');
+    if (searchTerm) {
+      filtered = filtered.filter(prompt =>
+        prompt.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prompt.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prompt.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
-    setSearchParams(newSearchParams);
-  };
+
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(prompt =>
+        prompt.category === selectedCategory
+      );
+    }
+
+    // Sort by highest average rating
+    filtered.sort((a, b) => {
+      const aRating = a.rating?.average || 0;
+      const bRating = b.rating?.average || 0;
+      return bRating - aRating;
+    });
+
+    setFilteredPrompts(filtered);
+  }, [prompts, searchTerm, selectedCategory]);
 
   const addVariable = () => {
     setVariables([
@@ -138,7 +139,13 @@ const Prompts: React.FC = () => {
         tags: tagsArray,
         relatedPrompts: [],
       };
-      await promptsApi.create(promptData);
+      const response = await promptsApi.create(promptData);
+      
+      // Update store immediately with new prompt
+      if (response.data) {
+        addPrompt(response.data);
+      }
+      
       toast.success('Prompt created successfully');
       setIsCreateModalOpen(false);
       reset();
@@ -167,7 +174,13 @@ const Prompts: React.FC = () => {
         tags: tagsArray,
         relatedPrompts: editingPrompt.relatedPrompts,
       };
-      await promptsApi.update(editingPrompt.id, promptData);
+      const response = await promptsApi.update(editingPrompt.id, promptData);
+      
+      // Update store immediately with updated prompt
+      if (response.data) {
+        updatePrompt(editingPrompt.id, response.data);
+      }
+      
       toast.success('Prompt updated successfully');
       setIsEditModalOpen(false);
       setEditingPrompt(null);
@@ -203,22 +216,60 @@ const Prompts: React.FC = () => {
     }
   };
 
-  const handleRating = (id: string, rating: number) => {
-    // Update the prompt's rating in the local state
-    const updatedPrompts = prompts.map(prompt => 
-      prompt.id === id 
-        ? {
-            ...prompt,
-            rating: {
-              average: rating, // In a real app, this would be calculated server-side
-              count: (prompt.rating?.count || 0) + 1,
-              userRating: rating
+  const handleRating = async (id: string, rating: number) => {
+    try {
+      console.log('=== RATING DEBUG ===');
+      console.log('Submitting rating for prompt:', { id, rating });
+      
+      // Optimistic update - show stars filled immediately
+      const optimisticPrompts = prompts.map(prompt => 
+        prompt.id === id 
+          ? {
+              ...prompt,
+              rating: {
+                average: prompt.rating?.average || rating,
+                count: prompt.rating?.count || 1,
+                userRating: rating
+              }
             }
-          }
-        : prompt
-    );
-    setPrompts(updatedPrompts);
-    toast.success('Rating submitted successfully');
+          : prompt
+      );
+      setPrompts(optimisticPrompts);
+      
+      // Call the backend API to save the rating
+      const response = await ratingsApi.ratePrompt(id, rating);
+      
+      console.log('Rating response:', response);
+      
+      // The response object has stats at the top level
+      const stats = response.stats || (response as any).data?.stats;
+      
+      if (response.success && stats) {
+        console.log('Stats found:', stats);
+        // Update with server stats
+        const updatedPrompts = prompts.map(prompt => 
+          prompt.id === id 
+            ? {
+                ...prompt,
+                rating: {
+                  average: stats.average,
+                  count: stats.count,
+                  userRating: stats.userRating || rating
+                }
+              }
+            : prompt
+        );
+        setPrompts(updatedPrompts);
+        toast.success('Rating submitted successfully');
+      } else {
+        console.warn('Response missing success or stats:', response);
+        toast.error('Rating response incomplete');
+      }
+    } catch (error) {
+      console.error('=== RATING ERROR ===');
+      console.error('Failed to submit rating:', error);
+      toast.error('Failed to submit rating. Please try again.');
+    }
   };
 
   const handleView = (prompt: Prompt) => {
@@ -267,18 +318,23 @@ const Prompts: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
       <PromptsHeader onCreateClick={() => setIsCreateModalOpen(true)} />
       
       <PromptsFilters
-        searchQuery={searchQuery}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         selectedCategory={selectedCategory}
-        onSearchChange={handleSearch}
-        onCategoryChange={handleCategoryFilter}
+        onCategoryChange={setSelectedCategory}
       />
 
       <PromptsGrid
-        prompts={prompts}
+        prompts={filteredPrompts}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
@@ -334,7 +390,7 @@ const Prompts: React.FC = () => {
         onExecute={handleExecutePrompt}
         onReset={() => setIsExecuted(false)}
       />
-    </div>
+    </motion.div>
   );
 };
 

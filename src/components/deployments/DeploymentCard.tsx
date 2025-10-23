@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { EnvironmentPipeline, VersionHistory } from '../environment/EnvironmentManagement';
 import { VersionManager } from '../../utils/environment';
-import { Environment } from '../../types/versioning';
+import { Environment, PromotionStatus } from '../../types/versioning';
 
 // Use the shared interface from types
 import { VersionableItem } from '../../types/versioning';
@@ -19,6 +19,7 @@ interface DeploymentCardProps {
   index: number;
   onPromote: (item: UIVersionableItem, environment: Environment) => void;
   onRollback: (item: UIVersionableItem, environment: Environment) => void;
+  pendingPromotions?: Array<{ itemId: string; toEnvironment: Environment; status: PromotionStatus }>;
 }
 
 export const DeploymentCard: React.FC<DeploymentCardProps> = ({
@@ -26,6 +27,7 @@ export const DeploymentCard: React.FC<DeploymentCardProps> = ({
   index,
   onPromote,
   onRollback,
+  pendingPromotions = [],
 }) => {
   return (
     <motion.div
@@ -56,6 +58,7 @@ export const DeploymentCard: React.FC<DeploymentCardProps> = ({
           item={item}
           onPromote={(env) => onPromote(item, env)}
           onRollback={(env) => onRollback(item, env)}
+          pendingPromotions={pendingPromotions}
         />
       </div>
 

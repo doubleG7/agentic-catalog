@@ -21,6 +21,7 @@ Standard Packages.json
 
 UI/UX & Tailwind Guidelines
     •Use Tailwind utility-first classes for layout, spacing, and colors.
+	•Leverage standard Theme design for dark and light mode
 	•Apply responsive design using Tailwind’s breakpoint system.
 	•Use modal dialogs or slide-ins for create/edit flows.
 	•Prefer dropdowns, toggles, and status badges for visual clarity.

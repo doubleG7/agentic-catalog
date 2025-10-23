@@ -63,27 +63,27 @@ export interface PromptVariable {
 }
 
 export enum InstructionCategory {
-  BUSINESS = 'business',
-  PRODUCT = 'product',
-  SOFTWARE_ENGINEERING = 'software_engineering',
-  DEVELOPMENT = 'development',
-  PROJECT_MANAGEMENT = 'project_management',
-  DESIGN = 'design',
-  MARKETING = 'marketing',
-  SALES = 'sales',
-  GENERAL = 'general'
+  BUSINESS = 'BUSINESS',
+  PRODUCT = 'PRODUCT',
+  SOFTWARE_ENGINEERING = 'SOFTWARE_ENGINEERING',
+  DEVELOPMENT = 'DEVELOPMENT',
+  PROJECT_MANAGEMENT = 'PROJECT_MANAGEMENT',
+  DESIGN = 'DESIGN',
+  MARKETING = 'MARKETING',
+  SALES = 'SALES',
+  GENERAL = 'GENERAL'
 }
 
 export enum PromptCategory {
-  CODE_GENERATION = 'code_generation',
-  DOCUMENTATION = 'documentation',
-  ANALYSIS = 'analysis',
-  CREATIVE = 'creative',
-  PROBLEM_SOLVING = 'problem_solving',
-  COMMUNICATION = 'communication',
-  RESEARCH = 'research',
-  PLANNING = 'planning',
-  GENERAL = 'general'
+  CODE_GENERATION = 'CODE_GENERATION',
+  DOCUMENTATION = 'DOCUMENTATION',
+  ANALYSIS = 'ANALYSIS',
+  CREATIVE = 'CREATIVE',
+  PROBLEM_SOLVING = 'PROBLEM_SOLVING',
+  COMMUNICATION = 'COMMUNICATION',
+  RESEARCH = 'RESEARCH',
+  PLANNING = 'PLANNING',
+  GENERAL = 'GENERAL'
 }
 
 export interface CreateInstructionRequest {
@@ -123,6 +123,11 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
   success: boolean;
+  stats?: {
+    average?: number;
+    count?: number;
+    userRating?: number;
+  };
 }
 
 export interface PaginatedResponse<T> {

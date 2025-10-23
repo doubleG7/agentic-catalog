@@ -108,7 +108,7 @@ const Collections: React.FC = () => {
     setLoading(false);
   }, []);
 
-  // Filter collections based on search and category
+  // Filter collections based on search and category, sorted by highest ratings
   useEffect(() => {
     let filtered = collections;
 
@@ -125,6 +125,13 @@ const Collections: React.FC = () => {
         collection.tags.includes(selectedCategory)
       );
     }
+
+    // Sort by highest rating
+    filtered.sort((a, b) => {
+      const aRating = a.rating || 0;
+      const bRating = b.rating || 0;
+      return bRating - aRating;
+    });
 
     setFilteredCollections(filtered);
   }, [collections, searchTerm, selectedCategory]);

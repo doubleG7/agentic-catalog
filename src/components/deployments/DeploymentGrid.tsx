@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { GitBranch } from 'lucide-react';
 import { DeploymentCard } from './DeploymentCard';
-import { Environment } from '../../types/versioning';
+import { Environment, PromotionStatus } from '../../types/versioning';
 
 // Use the shared interface from types
 import { VersionableItem } from '../../types/versioning';
@@ -18,12 +18,14 @@ interface DeploymentGridProps {
   items: UIVersionableItem[];
   onPromote: (item: UIVersionableItem, environment: Environment) => void;
   onRollback: (item: UIVersionableItem, environment: Environment) => void;
+  pendingPromotions?: Array<{ itemId: string; toEnvironment: Environment; status: PromotionStatus }>;
 }
 
 export const DeploymentGrid: React.FC<DeploymentGridProps> = ({
   items,
   onPromote,
   onRollback,
+  pendingPromotions = [],
 }) => {
   if (items.length === 0) {
     return (
@@ -55,6 +57,7 @@ export const DeploymentGrid: React.FC<DeploymentGridProps> = ({
           index={index}
           onPromote={onPromote}
           onRollback={onRollback}
+          pendingPromotions={pendingPromotions}
         />
       ))}
     </motion.div>
