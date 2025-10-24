@@ -86,6 +86,43 @@ export enum PromptCategory {
   GENERAL = 'GENERAL'
 }
 
+export interface Collection {
+  id: string;
+  title?: string;
+  name?: string;
+  description: string;
+  instructions: string[];
+  prompts: string[];
+  tags: string[];
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  usageCount?: number;
+  items?: Array<{
+    id: string;
+    type: 'instruction' | 'prompt';
+    itemId: string;
+    order: number;
+  }>;
+  connections?: Array<{
+    from: string;
+    to: string;
+    type: 'instruction' | 'prompt';
+  }>;
+  nodePositions?: Array<{
+    id: string;
+    x: number;
+    y: number;
+    type: 'instruction' | 'prompt' | 'connector';
+  }>;
+  rating?: {
+    average: number;
+    count: number;
+    userRating?: number;
+  } | number;
+}
+
 export interface CreateInstructionRequest {
   title: string;
   description: string;

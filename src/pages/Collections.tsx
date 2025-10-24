@@ -8,26 +8,7 @@ import { CollectionEmptyState } from '../components/collections/CollectionEmptyS
 import { CollectionModal } from '../components/collections/CollectionModal';
 import { collectionApi } from '../api/services';
 import toast from 'react-hot-toast';
-
-interface Collection {
-  id: string;
-  name: string;
-  description: string;
-  instructions: string[];
-  prompts: string[];
-  connections: Array<{
-    from: string;
-    to: string;
-    type: 'instruction' | 'prompt';
-  }>;
-  tags: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  usageCount: number;
-  rating?: number;
-}
+import type { Collection } from '../types';
 
 const Collections: React.FC = () => {
   const { instructions, prompts } = useAppStore();
@@ -71,7 +52,7 @@ const Collections: React.FC = () => {
 
     if (searchTerm) {
       filtered = filtered.filter(collection =>
-        collection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (collection.name || collection.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         collection.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         collection.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       );
@@ -85,8 +66,8 @@ const Collections: React.FC = () => {
 
     // Sort by highest rating
     filtered.sort((a, b) => {
-      const aRating = a.rating || 0;
-      const bRating = b.rating || 0;
+      const aRating = typeof a.rating === 'number' ? a.rating : (a.rating?.average || 0);
+      const bRating = typeof b.rating === 'number' ? b.rating : (b.rating?.average || 0);
       return bRating - aRating;
     });
 
@@ -113,7 +94,7 @@ const Collections: React.FC = () => {
     const newCollection: Collection = {
       ...collection,
       id: Date.now().toString(),
-      name: `${collection.name} (Copy)`,
+      name: `${collection.name || collection.title} (Copy)`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       usageCount: 0,

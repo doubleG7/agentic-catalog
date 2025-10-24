@@ -47,7 +47,7 @@ export interface AuthInfoResponse {
 
 export class AuthService {
   private static user: AuthUser | null = null;
-  private static refreshTimeout: NodeJS.Timeout | null = null;
+  private static refreshTimeout: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Get authentication provider information

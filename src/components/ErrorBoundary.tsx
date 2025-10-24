@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
     }
 
     // In production, send to error reporting service
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.MODE === 'production') {
       // Example: Sentry.captureException(error, { contexts: { errorInfo } });
     }
   }

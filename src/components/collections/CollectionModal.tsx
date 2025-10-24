@@ -3,26 +3,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Modal } from '../ui/Modal';
 import { StarRating } from '../ui/StarRating';
-
-interface Collection {
-  id: string;
-  name: string;
-  description: string;
-  instructions: string[];
-  prompts: string[];
-  connections: Array<{
-    from: string;
-    to: string;
-    type: 'instruction' | 'prompt';
-  }>;
-  tags: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  usageCount: number;
-  rating?: number;
-}
+import type { Collection } from '../../types';
 
 interface CollectionModalProps {
   isOpen: boolean;
@@ -48,11 +29,11 @@ export const CollectionModal: React.FC<CollectionModalProps> = ({
   React.useEffect(() => {
     if (editingCollection) {
       setFormData({
-        name: editingCollection.name,
+        name: editingCollection.name || editingCollection.title || '',
         description: editingCollection.description,
         tags: editingCollection.tags.join(', '),
         isPublic: editingCollection.isPublic,
-        rating: editingCollection.rating || 0
+        rating: typeof editingCollection.rating === 'number' ? editingCollection.rating : (editingCollection.rating?.average || 0)
       });
     } else {
       setFormData({
