@@ -18,7 +18,7 @@ export interface Instruction {
   metadata?: {
     author?: string;
     version?: string;
-    difficulty?: 'beginner' | 'intermediate' | 'advanced';
+    difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
     estimatedTime?: number; // in minutes
     prerequisites?: string[];
     outputs?: string[];
@@ -65,7 +65,7 @@ export interface PromptVariable {
 export enum InstructionCategory {
   BUSINESS = 'BUSINESS',
   PRODUCT = 'PRODUCT',
-  SOFTWARE_ENGINEERING = 'SOFTWARE_ENGINEERING',
+  AGENTIC_AI = 'AGENTIC_AI',
   DEVELOPMENT = 'DEVELOPMENT',
   PROJECT_MANAGEMENT = 'PROJECT_MANAGEMENT',
   DESIGN = 'DESIGN',
@@ -98,7 +98,7 @@ export interface CreateInstructionRequest {
   metadata?: {
     author?: string;
     version?: string;
-    difficulty?: 'beginner' | 'intermediate' | 'advanced';
+    difficulty?: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
     estimatedTime?: number;
     prerequisites?: string[];
     outputs?: string[];

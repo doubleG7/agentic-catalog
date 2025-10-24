@@ -57,8 +57,8 @@ export const InstructionCard: React.FC<InstructionCardProps> = ({
           </div>
           {instruction.metadata?.difficulty && (
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              instruction.metadata.difficulty === 'beginner' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-              instruction.metadata.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+              instruction.metadata.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+              instruction.metadata.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
               'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
             }`}>
               {instruction.metadata.difficulty}

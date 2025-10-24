@@ -1081,7 +1081,7 @@ const FlowVisualization: React.FC = () => {
                 <option value="all">All Categories</option>
                 <option value="business">Business</option>
                 <option value="product">Product</option>
-                <option value="software_engineering">Software Engineering</option>
+                <option value="AGENTIC_AI">Software Engineering</option>
                 <option value="development">Development</option>
                 <option value="project_management">Project Management</option>
                 <option value="design">Design</option>

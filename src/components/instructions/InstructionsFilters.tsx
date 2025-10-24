@@ -1,6 +1,14 @@
 import React from 'react';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ChevronDown } from 'lucide-react';
 import { Input } from '../ui/Input';
+import { Button } from '../ui/Button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from '../ui/dropdown-menu';
 import { InstructionCategory } from '../../types';
 
 interface InstructionsFiltersProps {
@@ -17,8 +25,8 @@ export const InstructionsFilters: React.FC<InstructionsFiltersProps> = ({
   onCategoryChange
 }) => {
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex-1 max-w-md">
+    <div className="grid grid-cols-[0.3fr_30px_auto] items-center gap-10 md:gap-4">
+      <div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <Input
@@ -30,23 +38,34 @@ export const InstructionsFilters: React.FC<InstructionsFiltersProps> = ({
           />
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters:</span>
-          <select
-            value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="text-sm border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md focus:border-primary-500 focus:ring-primary-500"
-          >
-            <option value="all">All Categories</option>
-            {Object.values(InstructionCategory).map((category) => (
-              <option key={category} value={category}>
-                {category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>Or</div>
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="md" className="gap-2">
+              {selectedCategory === 'all' 
+                ? 'All Categories' 
+                : selectedCategory
+                    .split('_')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ')}
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-gray-800">
+            <DropdownMenuRadioGroup value={selectedCategory} onValueChange={onCategoryChange}>
+              <DropdownMenuRadioItem value="all" className="hover:bg-gray-100 dark:hover:bg-gray-700">All Categories</DropdownMenuRadioItem>
+              {Object.values(InstructionCategory).map((category) => (
+                <DropdownMenuRadioItem key={category} value={category} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  {category
+                    .split('_')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ')}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

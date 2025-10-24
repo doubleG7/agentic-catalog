@@ -131,7 +131,7 @@ const Dashboard: React.FC = () => {
         category: data.category,
         isPublic: data.isPublic,
         tags: Array.isArray(data.tags) ? data.tags : [],
-        relatedInstructions: editingInstruction.relatedInstructions,
+        relatedInstructionIds: editingInstruction.relatedInstructions,
       };
       await instructionsApi.update(editingInstruction.id, instructionData);
       toast.success('Instruction updated successfully');
@@ -335,32 +335,46 @@ const Dashboard: React.FC = () => {
     fetchDashboardData();
   }, [setInstructions, setPrompts, setHealthStatus]);
 
+  // Calculate real stats from data
+  const getAverageRating = (items: any[]) => {
+    if (items.length === 0) return '0.0';
+    const average = items.reduce((sum, item) => sum + (item.rating?.average || 0), 0) / items.length;
+    return average.toFixed(1);
+  };
+
+  const getTotalRatings = (items: any[]) => {
+    return items.reduce((sum, item) => sum + (item.rating?.count || 0), 0);
+  };
+
   const stats = [
     {
       name: 'Total Instructions',
       value: allInstructions.length.toString(),
-      change: '+12%',
+      change: `${allInstructions.length} instructions`,
       changeType: 'increase' as const,
       icon: FileText,
     },
     {
       name: 'Total Prompts',
       value: allPrompts.length.toString(),
-      change: '+8%',
+      change: `${allPrompts.length} prompts`,
       changeType: 'increase' as const,
       icon: MessageSquare,
     },
     {
-      name: 'Active Projects',
-      value: '23',
-      change: '+2%',
+      name: 'Total Ratings',
+      value: (getTotalRatings(allInstructions) + getTotalRatings(allPrompts)).toString(),
+      change: 'Across all content',
       changeType: 'increase' as const,
       icon: GitBranch,
     },
     {
-      name: 'Team Members',
-      value: '12',
-      change: '0%',
+      name: 'Top Rated',
+      value: Math.max(
+        allInstructions.length > 0 ? parseFloat(getAverageRating(allInstructions)) : 0,
+        allPrompts.length > 0 ? parseFloat(getAverageRating(allPrompts)) : 0
+      ).toFixed(1),
+      change: 'Highest average',
       changeType: 'neutral' as const,
       icon: Users,
     },

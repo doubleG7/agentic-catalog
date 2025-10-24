@@ -130,7 +130,7 @@ Clearly define the problem this product solves.
 - [ ] Database queries are optimized
 - [ ] Caching implemented where appropriate
 - [ ] Memory usage is reasonable`,
-    category: InstructionCategory.SOFTWARE_ENGINEERING,
+    category: InstructionCategory.AGENTIC_AI,
     tags: ['code-review', 'quality-assurance', 'best-practices'],
     createdAt: '2024-01-12T11:30:00Z',
     updatedAt: '2024-01-22T13:20:00Z',
@@ -354,7 +354,7 @@ This guide provides a complete foundation for building production-ready Gemini g
     metadata: {
       author: 'AI Development Team',
       version: '1.0',
-      difficulty: 'advanced',
+      difficulty: 'ADVANCED',
       estimatedTime: 180,
       prerequisites: ['Google Cloud Platform account', 'Gemini API access', 'Node.js or Python experience', 'Basic understanding of AI/ML concepts'],
       outputs: ['Configured Gemini gem project', 'Knowledge document integration', 'Deployment-ready gem', 'Testing and monitoring setup']
@@ -561,7 +561,7 @@ This guide ensures consistent, secure, and maintainable React applications for E
     metadata: {
       author: 'Trimble Construction Team',
       version: '1.0',
-      difficulty: 'intermediate',
+      difficulty: 'INTERMEDIATE',
       estimatedTime: 240,
       prerequisites: ['React experience', 'TypeScript knowledge', 'Tailwind CSS familiarity', 'Basic understanding of ERP systems'],
       outputs: ['Production-ready React ERP application', 'Proper project structure', 'Security implementation', 'Testing setup']

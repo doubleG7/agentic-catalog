@@ -9,7 +9,6 @@ import {
   MessageSquare,
   Settings,
   GitBranch,
-  Search,
   Bell,
   FolderOpen,
   Rocket,
@@ -156,7 +155,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main content */}
       <div className="lg:pl-80 relative z-10">
         {/* Top navigation */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8 justify-end">
           <Button
             variant="ghost"
             size="sm"
@@ -166,15 +165,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <Menu className="h-6 w-6" />
           </Button>
 
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="relative flex flex-1">
-              <Search className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 dark:text-gray-500 pl-3" />
-              <input
-                className="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 dark:text-gray-100 bg-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-0 sm:text-sm"
-                placeholder="Search instructions and prompts..."
-                type="search"
-              />
-            </div>
+          <div className="flex gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <ThemeToggle />
               <Button variant="ghost" size="sm">
@@ -214,7 +205,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-transparent px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center justify-between">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Prompt Studio</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Trimble Agentic Catalog</h1>
         {onClose && (
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-5 w-5" />

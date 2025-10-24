@@ -180,7 +180,7 @@ const Instructions: React.FC = () => {
         ? data.outputs.split(',').map((item: string) => item.trim()).filter(Boolean)
         : [];
         
-      const instructionData = {
+        const instructionData = {
         title: data.title,
         description: data.description,
         content: data.content,
@@ -191,14 +191,14 @@ const Instructions: React.FC = () => {
         relatedInstructions: [],
         metadata: {
           author: data.author || '',
-          version: data.version || '1.0',
-          difficulty: data.difficulty || 'beginner',
+          difficulty: data.difficulty || 'BEGINNER',
           estimatedTime: data.estimatedTime ? parseInt(data.estimatedTime) : undefined,
           prerequisites: prerequisitesArray,
           outputs: outputsArray,
         }
       };
       
+      console.log('Creating instruction with data:', instructionData);
       await instructionsApi.create(instructionData);
       toast.success('Instruction created successfully');
       setIsCreateModalOpen(false);
@@ -206,6 +206,7 @@ const Instructions: React.FC = () => {
       setVariables([]);
       fetchInstructions();
     } catch (error) {
+      console.error('Error creating instruction:', error);
       toast.error('Failed to create instruction');
     }
   };
@@ -234,7 +235,7 @@ const Instructions: React.FC = () => {
         isPublic: data.isPublic,
         variables: editVariables,
         tags: tagsArray,
-        relatedInstructions: editingInstruction.relatedInstructions,
+        relatedInstructionIds: editingInstruction.relatedInstructions,
         metadata: {
           author: data.author || editingInstruction.metadata?.author || '',
           version: data.version || editingInstruction.metadata?.version || '1.0',
@@ -269,7 +270,7 @@ const Instructions: React.FC = () => {
     // Set metadata fields
     setValueEdit('author', instruction.metadata?.author || '');
     setValueEdit('version', instruction.metadata?.version || '1.0');
-    setValueEdit('difficulty', instruction.metadata?.difficulty || 'beginner');
+    setValueEdit('difficulty', instruction.metadata?.difficulty?.toLowerCase() as 'beginner' | 'intermediate' | 'advanced' || 'beginner');
     setValueEdit('estimatedTime', instruction.metadata?.estimatedTime?.toString() || '');
     setValueEdit('prerequisites', instruction.metadata?.prerequisites?.join(', ') || '');
     setValueEdit('outputs', instruction.metadata?.outputs?.join(', ') || '');

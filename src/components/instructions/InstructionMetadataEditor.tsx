@@ -29,9 +29,9 @@ export const InstructionMetadataEditor: React.FC<InstructionMetadataEditorProps>
         <Select
           label="Difficulty"
           options={[
-            { label: 'Beginner', value: 'beginner' },
-            { label: 'Intermediate', value: 'intermediate' },
-            { label: 'Advanced', value: 'advanced' }
+            { label: 'Beginner', value: 'BEGINNER' },
+            { label: 'Intermediate', value: 'INTERMEDIATE' },
+            { label: 'Advanced', value: 'ADVANCED' }
           ]}
           {...register('difficulty')}
           error={errors?.difficulty?.message}

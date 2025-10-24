@@ -128,7 +128,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
   return (
     <div className="space-y-6">
       {/* Instruction Preview */}
-      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 max-h-48 overflow-y-auto">
+      <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 max-h-[576px] overflow-y-auto">
         <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Instruction Content:</h3>
         <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
           {instruction.content}
