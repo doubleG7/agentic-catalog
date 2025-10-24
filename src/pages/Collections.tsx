@@ -11,29 +11,21 @@ import toast from 'react-hot-toast';
 
 interface Collection {
   id: string;
-  name?: string;
-  title?: string;
+  name: string;
   description: string;
-  instructions?: string[];
-  prompts?: string[];
-  connections?: Array<{
+  instructions: string[];
+  prompts: string[];
+  connections: Array<{
     from: string;
     to: string;
     type: 'instruction' | 'prompt';
   }>;
-  items?: Array<{
-    id: string;
-    type: 'instruction' | 'prompt';
-    itemId: string;
-    order: number;
-  }>;
-  tags?: string[];
+  tags: string[];
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
-  createdBy?: string;
-  userId?: string;
-  usageCount?: number;
+  createdBy: string;
+  usageCount: number;
   rating?: number;
 }
 
@@ -78,17 +70,16 @@ const Collections: React.FC = () => {
     let filtered = [...collections];
 
     if (searchTerm) {
-      filtered = filtered.filter(collection => {
-        const name = collection.name || collection.title || '';
-        return name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          collection.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (collection.tags && collection.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())));
-      });
+      filtered = filtered.filter(collection =>
+        collection.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        collection.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        collection.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
 
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(collection =>
-        collection.tags && collection.tags.includes(selectedCategory)
+        collection.tags.includes(selectedCategory)
       );
     }
 
