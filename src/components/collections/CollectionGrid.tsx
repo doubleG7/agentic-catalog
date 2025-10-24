@@ -1,26 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CollectionCard } from './CollectionCard';
-
-interface Collection {
-  id: string;
-  name: string;
-  description: string;
-  instructions: string[];
-  prompts: string[];
-  connections: Array<{
-    from: string;
-    to: string;
-    type: 'instruction' | 'prompt';
-  }>;
-  tags: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  usageCount: number;
-  rating?: number;
-}
+import type { Collection } from '../../types';
 
 interface CollectionGridProps {
   collections: Collection[];

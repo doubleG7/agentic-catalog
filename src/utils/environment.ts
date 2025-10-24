@@ -406,5 +406,5 @@ export class ReleaseManager {
  */
 function getDeploymentToken(environment: Environment): string {
   // This should integrate with your authentication system
-  return process.env[`VITE_${environment.toUpperCase()}_DEPLOY_TOKEN`] || '';
+  return (import.meta.env[`VITE_${environment.toUpperCase()}_DEPLOY_TOKEN`] as string) || '';
 }

@@ -13,34 +13,7 @@ import {
   Share2
 } from 'lucide-react';
 import { RatingDisplay } from '../ui/RatingDisplay';
-
-interface Collection {
-  id: string;
-  title?: string;
-  name?: string;
-  description: string;
-  items?: Array<{
-    id: string;
-    type: 'instruction' | 'prompt';
-    itemId: string;
-    order: number;
-  }>;
-  instructions?: string[];
-  prompts?: string[];
-  connections?: Array<{
-    from: string;
-    to: string;
-    type: 'instruction' | 'prompt';
-  }>;
-  tags: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy?: string;
-  userId?: string;
-  usageCount?: number;
-  rating?: number;
-}
+import type { Collection } from '../../types';
 
 interface CollectionCardProps {
   collection: Collection;
@@ -62,8 +35,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   getPromptTitle,
 }) => {
   // Support both old format (instructions/prompts/connections) and new format (items)
-  const instructions = collection.instructions || collection.items?.filter(i => i.type === 'instruction').map(i => i.itemId) || [];
-  const prompts = collection.prompts || collection.items?.filter(i => i.type === 'prompt').map(i => i.itemId) || [];
+  const instructions = collection.instructions || collection.items?.filter((i: any) => i.type === 'instruction').map((i: any) => i.itemId) || [];
+  const prompts = collection.prompts || collection.items?.filter((i: any) => i.type === 'prompt').map((i: any) => i.itemId) || [];
   const connections = collection.connections || [];
   return (
     <div className="card bg-white/80 dark:bg-gray-800/80 p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
@@ -118,7 +91,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
 
       {/* Rating */}
       <div className="mb-4">
-        <RatingDisplay rating={collection.rating || 0} size="sm" />
+        <RatingDisplay rating={typeof collection.rating === 'number' ? collection.rating : collection.rating?.average || 0} size="sm" />
       </div>
 
       {/* Collection Stats */}

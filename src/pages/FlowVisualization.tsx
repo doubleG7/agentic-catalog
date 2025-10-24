@@ -20,7 +20,7 @@ import 'reactflow/dist/style.css';
 import { Button } from '../components/ui/Button';
 import { CollectionModal } from '../components/collections/CollectionModal';
 import { instructionsApi, promptsApi, collectionApi } from '../api/services';
-import { Instruction, Prompt } from '../types';
+import { Instruction, Prompt, Collection } from '../types';
 import toast from 'react-hot-toast';
 import { Maximize2, X, Trash2, FolderOpen, Edit } from 'lucide-react';
 
@@ -210,34 +210,7 @@ const ConnectorNode = ({ data, selected, id }: { data: any; selected?: boolean; 
   );
 };
 
-
-
-interface Collection {
-  id: string;
-  name: string;
-  description: string;
-  instructions: string[];
-  prompts: string[];
-  connections: Array<{
-    from: string;
-    to: string;
-    type: 'instruction' | 'prompt';
-  }>;
-  nodePositions?: Array<{
-    id: string;
-    x: number;
-    y: number;
-    type: 'instruction' | 'prompt' | 'connector';
-  }>;
-  tags: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  usageCount: number;
-  rating?: number;
-}
-
+// Flow visualization component
 const FlowVisualization: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -465,7 +438,7 @@ const FlowVisualization: React.FC = () => {
       });
 
       // Add connections from the collection
-      collection.connections.forEach((connection, index) => {
+      (collection.connections || []).forEach((connection, index) => {
         flowEdges.push({
           id: `collection-edge-${index}`,
           source: connection.from,
@@ -495,9 +468,9 @@ const FlowVisualization: React.FC = () => {
         console.log('Flow nodes created:', flowNodes.map(n => ({ id: n.id, type: n.type })));
         
         // Also restore any connector nodes that were saved
-        const savedConnectorNodes = collection.nodePositions
-          .filter(pos => pos.type === 'connector')
-          .map(pos => ({
+        const savedConnectorNodes = (collection.nodePositions || [])
+          .filter((pos: any) => pos.type === 'connector')
+          .map((pos: any) => ({
             id: pos.id,
             type: 'connector' as const,
             position: { x: pos.x, y: pos.y },
@@ -509,14 +482,14 @@ const FlowVisualization: React.FC = () => {
         
         const positionedNodes = [...flowNodes, ...savedConnectorNodes].map(node => {
           // Try multiple ID matching strategies
-          const savedPosition = collection.nodePositions?.find(pos => {
+          const savedPosition = (collection.nodePositions || []).find((pos: any) => {
             // Direct ID match
             if (pos.id === node.id) return true;
             
             // For instructions/prompts, also try matching with data ID
             if (node.type === 'instruction' || node.type === 'prompt') {
-              const dataIdMatch = pos.id === `${node.type}-${node.data.id}`;
-              const baseIdMatch = pos.id.startsWith(`${node.type}-${node.data.id}-`);
+              const dataIdMatch = pos.id === `${node.type}-${(node.data as any).id}`;
+              const baseIdMatch = pos.id.startsWith(`${node.type}-${(node.data as any).id}-`);
               return dataIdMatch || baseIdMatch;
             }
             
@@ -642,14 +615,14 @@ const FlowVisualization: React.FC = () => {
       // Build items array from nodes
       const items = nodes
         .filter(n => n.type === 'instruction' || n.type === 'prompt')
-        .map((node, index) => ({
+        .map((node, _index) => ({
           type: node.type as 'instruction' | 'prompt',
           itemId: node.data.id || node.id,
-          order: index
+          order: _index
         }));
 
       // Build connections from edges
-      const connections = edges.map((edge, index) => ({
+      const connections = edges.map((edge, _index) => ({
         from: edge.source,
         to: edge.target,
         type: (edge.target.startsWith('instruction') ? 'instruction' : 'prompt') as 'instruction' | 'prompt'
