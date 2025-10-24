@@ -3,9 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "env": {
-    "production": [
-      "VITE_API_URL"
-    ]
+    "production": "VITE_API_URL"
   },
   "git": {
     "deploymentEnabled": {
