@@ -16,11 +16,18 @@ import { RatingDisplay } from '../ui/RatingDisplay';
 
 interface Collection {
   id: string;
-  name: string;
+  title?: string;
+  name?: string;
   description: string;
-  instructions: string[];
-  prompts: string[];
-  connections: Array<{
+  items?: Array<{
+    id: string;
+    type: 'instruction' | 'prompt';
+    itemId: string;
+    order: number;
+  }>;
+  instructions?: string[];
+  prompts?: string[];
+  connections?: Array<{
     from: string;
     to: string;
     type: 'instruction' | 'prompt';
@@ -29,8 +36,9 @@ interface Collection {
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
-  createdBy: string;
-  usageCount: number;
+  createdBy?: string;
+  userId?: string;
+  usageCount?: number;
   rating?: number;
 }
 
@@ -51,8 +59,12 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   onDuplicate,
   onToggleVisibility,
   getInstructionTitle,
-  getPromptTitle
+  getPromptTitle,
 }) => {
+  // Support both old format (instructions/prompts/connections) and new format (items)
+  const instructions = collection.instructions || collection.items?.filter(i => i.type === 'instruction').map(i => i.itemId) || [];
+  const prompts = collection.prompts || collection.items?.filter(i => i.type === 'prompt').map(i => i.itemId) || [];
+  const connections = collection.connections || [];
   return (
     <div className="card bg-white/80 dark:bg-gray-800/80 p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
       {/* Collection Header */}
@@ -60,7 +72,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-              {collection.name}
+              {collection.title || collection.name}
             </h3>
             {collection.isPublic ? (
               <Eye className="h-4 w-4 text-green-500" />
@@ -113,19 +125,19 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
       <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-gray-50/50 dark:bg-gray-700/50 rounded-lg">
         <div className="text-center">
           <div className="text-lg font-semibold text-primary-600 dark:text-primary-400">
-            {collection.instructions.length}
+            {instructions.length}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">Instructions</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-            {collection.prompts.length}
+            {prompts.length}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">Prompts</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-            {collection.connections.length}
+            {connections.length}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">Connections</div>
         </div>
@@ -135,21 +147,21 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
       <div className="mb-4">
         <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Items:</div>
         <div className="space-y-1 max-h-20 overflow-y-auto">
-          {collection.instructions.slice(0, 2).map(id => (
+          {instructions.slice(0, 2).map(id => (
             <div key={`inst-${id}`} className="flex items-center gap-2 text-xs">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span className="text-gray-600 dark:text-gray-400 truncate">{getInstructionTitle(id)}</span>
             </div>
           ))}
-          {collection.prompts.slice(0, 2).map(id => (
+          {prompts.slice(0, 2).map(id => (
             <div key={`prompt-${id}`} className="flex items-center gap-2 text-xs">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span className="text-gray-600 dark:text-gray-400 truncate">{getPromptTitle(id)}</span>
             </div>
           ))}
-          {(collection.instructions.length + collection.prompts.length) > 4 && (
+          {(instructions.length + prompts.length) > 4 && (
             <div className="text-xs text-gray-400 dark:text-gray-500">
-              +{(collection.instructions.length + collection.prompts.length) - 4} more items
+              +{(instructions.length + prompts.length) - 4} more items
             </div>
           )}
         </div>
@@ -157,7 +169,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
 
       {/* Tags */}
       <div className="flex flex-wrap gap-1 mb-4">
-        {collection.tags.slice(0, 3).map((tag) => (
+        {(collection.tags || []).slice(0, 3).map((tag) => (
           <span
             key={tag}
             className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200"
@@ -166,8 +178,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
             {tag}
           </span>
         ))}
-        {collection.tags.length > 3 && (
-          <span className="text-xs text-gray-400 dark:text-gray-500">+{collection.tags.length - 3} more</span>
+        {(collection.tags?.length || 0) > 3 && (
+          <span className="text-xs text-gray-400 dark:text-gray-500">+{(collection.tags?.length || 0) - 3} more</span>
         )}
       </div>
 
@@ -176,7 +188,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-1">
             <Users className="h-3 w-3" />
-            {collection.usageCount} uses
+            {collection.usageCount || 0} uses
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />

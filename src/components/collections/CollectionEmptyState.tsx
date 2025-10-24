@@ -1,18 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, GitBranch } from 'lucide-react';
-import { Button } from '../ui/Button';
+import { GitBranch } from 'lucide-react';
 
 interface CollectionEmptyStateProps {
   searchTerm: string;
   selectedCategory: string;
-  onCreateCollection: () => void;
+  onCreateCollection?: () => void;
 }
 
 export const CollectionEmptyState: React.FC<CollectionEmptyStateProps> = ({
   searchTerm,
-  selectedCategory,
-  onCreateCollection
+  selectedCategory
 }) => {
   const hasFilters = searchTerm || selectedCategory !== 'all';
 
@@ -31,15 +29,6 @@ export const CollectionEmptyState: React.FC<CollectionEmptyStateProps> = ({
           : 'Create your first collection by connecting instructions and prompts in the flow visualization.'
         }
       </p>
-      <div className="mt-6">
-        <Button 
-          onClick={onCreateCollection}
-          className="bg-gray-50 border-gray-400 text-gray-800 hover:bg-gray-100 hover:border-gray-500 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:border-gray-400 focus:font-bold focus:border-2 focus:border-primary-500 dark:focus:border-primary-400"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Create Collection
-        </Button>
-      </div>
     </motion.div>
   );
 };

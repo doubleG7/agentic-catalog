@@ -313,8 +313,8 @@ const Dashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       try {
         const [instructionsResponse, promptsResponse, health] = await Promise.all([
-          instructionsApi.getAll({ limit: 5 }),
-          promptsApi.getAll({ limit: 5 }),
+          instructionsApi.getAll({ limit: 25 }),
+          promptsApi.getAll({ limit: 25 }),
           healthApi.getStatus(),
         ]);
 

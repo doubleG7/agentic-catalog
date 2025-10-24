@@ -533,3 +533,81 @@ export const promptsApi = new PromptsApi();
 export const healthApi = new HealthApi();
 export const promotionsApi = new PromotionsApi();
 export const ratingsApi = new RatingsApi();
+
+export class CollectionsApi {
+  async getAllCollections(params?: {
+    page?: number;
+    limit?: number;
+    category?: string;
+    search?: string;
+  }): Promise<any[]> {
+    return apiCallWithFallback(
+      async () => {
+        const response = await apiClient.get<{ success: boolean; data: any[] }>('/collections', params);
+        return response.data;
+      },
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return [];
+      }
+    );
+  }
+
+  async getById(id: string): Promise<ApiResponse<any>> {
+    return apiCallWithFallback(
+      async () => apiClient.get<ApiResponse<any>>(`/collections/${id}`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        throw new Error('Collection not found');
+      }
+    );
+  }
+
+  async createCollection(data: any): Promise<any> {
+    return apiCallWithFallback(
+      async () => {
+        const response = await apiClient.post<ApiResponse<any>>('/collections', data);
+        return response.data;
+      },
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const newCollection = {
+          ...data,
+          id: Math.random().toString(36).substr(2, 9),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        return newCollection;
+      }
+    );
+  }
+
+  async updateCollection(id: string, data: any): Promise<any> {
+    return apiCallWithFallback(
+      async () => {
+        const response = await apiClient.put<ApiResponse<any>>(`/collections/${id}`, data);
+        return response.data;
+      },
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 600));
+        return {
+          id,
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+    );
+  }
+
+  async deleteCollection(id: string): Promise<ApiResponse<void>> {
+    return apiCallWithFallback(
+      async () => apiClient.delete<ApiResponse<void>>(`/collections/${id}`),
+      async () => {
+        await new Promise(resolve => setTimeout(resolve, 400));
+        return { data: undefined, success: true, message: 'Collection deleted successfully' };
+      }
+    );
+  }
+}
+
+export const collectionApi = new CollectionsApi();

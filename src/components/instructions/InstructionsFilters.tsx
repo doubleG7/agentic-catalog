@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import {
