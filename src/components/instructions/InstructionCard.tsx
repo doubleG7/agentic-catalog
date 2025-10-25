@@ -30,7 +30,12 @@ export const InstructionCard: React.FC<InstructionCardProps> = ({
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
-            {instruction.title}
+            <button
+              onClick={() => onView(instruction)}
+              className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors text-left"
+            >
+              {instruction.title}
+            </button>
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
             {instruction.description}
