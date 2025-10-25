@@ -140,7 +140,7 @@ export default function Login() {
           {/* Development Login - Only show if provider is available */}
           {providerInfo && !showDevLogin && (
             <button
-              onClick={() => setShowDevLogin(true)}
+              onClick={() => setShowDevLogin(false)}
               className="w-full text-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             >
               Use development login →
