@@ -29,9 +29,12 @@ export const PromptCard: React.FC<PromptCardProps> = ({
     <div className="card p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+          <button
+            onClick={() => onView(prompt)}
+            className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate hover:text-primary-600 dark:hover:text-primary-400 hover:underline transition-colors text-left"
+          >
             {prompt.title}
-          </h3>
+          </button>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
             {prompt.description}
           </p>
