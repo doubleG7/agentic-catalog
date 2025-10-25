@@ -70,7 +70,7 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
               </Button>
             </div>
           </div>
-          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto">
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 max-h-128 overflow-y-auto">
             <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-mono">
               {executedTemplate}
             </pre>
