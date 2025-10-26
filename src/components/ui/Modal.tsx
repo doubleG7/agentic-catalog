@@ -17,8 +17,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose, 
   title, 
   children, 
-  size = 'md',
-  containerRef
+  size = 'md'
 }) => {
   const sizeClasses = {
     sm: 'max-w-2xl',
