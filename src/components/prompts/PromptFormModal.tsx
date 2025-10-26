@@ -19,6 +19,7 @@ interface PromptFormModalProps {
   onRemoveVariable: (index: number) => void;
   onUpdateVariable: (index: number, field: keyof PromptVariable, value: any) => void;
   submitButtonText?: string;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const PromptFormModal: React.FC<PromptFormModalProps> = ({
@@ -34,6 +35,7 @@ export const PromptFormModal: React.FC<PromptFormModalProps> = ({
   onRemoveVariable,
   onUpdateVariable,
   submitButtonText = 'Create Prompt',
+  containerRef,
 }) => {
   const categoryOptions = Object.values(PromptCategory).map((category) => ({
     value: category,
@@ -46,6 +48,7 @@ export const PromptFormModal: React.FC<PromptFormModalProps> = ({
       onClose={onClose}
       title={title}
       size="lg"
+      containerRef={containerRef}
     >
       <form onSubmit={onSubmit} className="space-y-4">
         <Input

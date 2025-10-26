@@ -14,6 +14,7 @@ interface InstructionViewModalProps {
   executedTemplate: string;
   onExecute: (variableValues: Record<string, string>) => void;
   onReset: () => void;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const InstructionViewModal: React.FC<InstructionViewModalProps> = React.memo(({
@@ -24,6 +25,7 @@ export const InstructionViewModal: React.FC<InstructionViewModalProps> = React.m
   executedTemplate,
   onExecute,
   onReset,
+  containerRef,
 }) => {
   // Don't render anything if no instruction
   if (!instruction) return null;
@@ -39,6 +41,7 @@ export const InstructionViewModal: React.FC<InstructionViewModalProps> = React.m
       onClose={onClose}
       title={isExecuted ? 'Applied Instruction' : 'Apply Instruction'}
       size="xl"
+      containerRef={containerRef}
     >
       {!isExecuted ? (
         <InstructionExecutionForm

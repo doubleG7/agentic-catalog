@@ -26,6 +26,7 @@ const Instructions: React.FC = () => {
     setInstructionsLoading,
   } = useAppStore();
   
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const [filteredInstructions, setFilteredInstructions] = useState<Instruction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -79,7 +80,7 @@ const Instructions: React.FC = () => {
       ...variables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -103,7 +104,7 @@ const Instructions: React.FC = () => {
       ...editVariables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -421,6 +422,7 @@ const Instructions: React.FC = () => {
         onDelete={handleDelete}
         onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
+        gridRef={gridRef}
       />
 
       {/* Create Modal */}
@@ -441,6 +443,7 @@ const Instructions: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Create Instruction"
+        containerRef={gridRef}
       />
 
       {/* Edit Modal */}
@@ -462,6 +465,7 @@ const Instructions: React.FC = () => {
         onRemoveVariable={removeEditVariable}
         onUpdateVariable={updateEditVariable}
         submitButtonText="Update Instruction"
+        containerRef={gridRef}
       />
 
       {/* View/Execute Modal */}
@@ -473,6 +477,7 @@ const Instructions: React.FC = () => {
         executedTemplate={executedTemplate}
         onExecute={handleExecuteInstruction}
         onReset={() => setIsExecuted(false)}
+        containerRef={gridRef}
       />
     </motion.div>
   );

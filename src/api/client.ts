@@ -49,6 +49,25 @@ class ApiClient {
         return response;
       },
       (error) => {
+        // Log detailed error info for debugging (can be conditionally removed in prod)
+        if (error.response?.status === 400) {
+          console.error('Validation Error Details:', {
+            status: error.response.status,
+            data: error.response.data,
+            url: error.config?.url,
+            payload: error.config?.data,
+          });
+          
+          // Log specific validation errors
+          if (error.response.data?.details && Array.isArray(error.response.data.details)) {
+            console.error('Validation Errors:', error.response.data.details.map((err: any) => ({
+              field: err.param,
+              message: err.msg,
+              value: err.value,
+            })));
+          }
+        }
+        
         // Sanitize error messages to prevent information disclosure
         const message = SecurityUtils.sanitizeErrorMessage(error.response?.data || error);
         

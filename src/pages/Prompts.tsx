@@ -28,6 +28,7 @@ const Prompts: React.FC = () => {
     updatePrompt,
   } = useAppStore();
   
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -105,7 +106,7 @@ const Prompts: React.FC = () => {
       ...variables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -340,6 +341,7 @@ const Prompts: React.FC = () => {
         onDelete={handleDelete}
         onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
+        gridRef={gridRef}
       />
 
       {/* Create Modal */}
@@ -359,6 +361,7 @@ const Prompts: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Create Prompt"
+        containerRef={gridRef}
       />
 
       {/* Edit Modal */}
@@ -378,6 +381,7 @@ const Prompts: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Update Prompt"
+        containerRef={gridRef}
       />
 
       {/* View/Execute Modal */}
@@ -389,6 +393,7 @@ const Prompts: React.FC = () => {
         executedTemplate={executedTemplate}
         onExecute={handleExecutePrompt}
         onReset={() => setIsExecuted(false)}
+        containerRef={gridRef}
       />
     </motion.div>
   );

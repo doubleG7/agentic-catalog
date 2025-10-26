@@ -1,5 +1,6 @@
 import { apiClient } from './client';
 import { mockInstructions, mockPrompts, mockHealthStatus } from '../data/mockData';
+import { CacheManager, CacheKeyBuilder } from '../utils/cache';
 import {
   Instruction,
   Prompt,
@@ -41,13 +42,23 @@ async function apiCallWithFallback<T>(
 }
 
 export class InstructionsApi {
+  private cache = new CacheManager<any>({ ttl: 5 * 60 * 1000 }); // 5 minutes
+
   async getAll(params?: {
     page?: number;
     limit?: number;
     category?: string;
     search?: string;
   }): Promise<PaginatedResponse<Instruction>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.instruction.list(params);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: instructions list', params);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
       // Real API call
       async () => {
         const response = await apiClient.get<{ success: boolean; data: PaginatedResponse<Instruction> }>('/instructions', params);
@@ -90,10 +101,21 @@ export class InstructionsApi {
         };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 
   async getById(id: string): Promise<ApiResponse<Instruction>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.instruction.detail(id);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: instruction detail', id);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
       async () => apiClient.get<ApiResponse<Instruction>>(`/instructions/${id}`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 300));
@@ -104,10 +126,13 @@ export class InstructionsApi {
         return { data: instruction, success: true };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 
   async create(data: CreateInstructionRequest): Promise<ApiResponse<Instruction>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.post<ApiResponse<Instruction>>('/instructions', data),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -121,10 +146,16 @@ export class InstructionsApi {
         return { data: newInstruction, success: true, message: 'Instruction created successfully' };
       }
     );
+
+    // Invalidate list cache on create
+    this.cache.invalidateByPattern(/^instructions:list:/);
+    console.log('[Cache] Invalidated: instructions list (create)');
+    
+    return result;
   }
 
   async update(id: string, data: UpdateInstructionRequest): Promise<ApiResponse<Instruction>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.put<ApiResponse<Instruction>>(`/instructions/${id}`, data),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 600));
@@ -141,10 +172,17 @@ export class InstructionsApi {
         return { data: updatedInstruction, success: true, message: 'Instruction updated successfully' };
       }
     );
+
+    // Invalidate list and detail cache on update
+    this.cache.invalidateByPattern(/^instructions:list:/);
+    this.cache.delete(CacheKeyBuilder.instruction.detail(id));
+    console.log('[Cache] Invalidated: instructions list and detail', id);
+    
+    return result;
   }
 
   async delete(id: string): Promise<ApiResponse<void>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.delete<ApiResponse<void>>(`/instructions/${id}`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 400));
@@ -156,31 +194,61 @@ export class InstructionsApi {
         return { data: undefined, success: true, message: 'Instruction deleted successfully' };
       }
     );
+
+    // Invalidate list and detail cache on delete
+    this.cache.invalidateByPattern(/^instructions:list:/);
+    this.cache.delete(CacheKeyBuilder.instruction.detail(id));
+    console.log('[Cache] Invalidated: instructions list and detail', id);
+    
+    return result;
   }
 
   async getRelated(id: string): Promise<ApiResponse<Instruction[]>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.instruction.related(id);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: related instructions', id);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
       async () => apiClient.get<ApiResponse<Instruction[]>>(`/instructions/${id}/related`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 300));
         return { data: [], success: true };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 }
 
 export class PromptsApi {
+  private cache = new CacheManager<any>({ ttl: 5 * 60 * 1000 }); // 5 minutes
+
   async getAll(params?: {
     page?: number;
     limit?: number;
     category?: string;
     search?: string;
   }): Promise<PaginatedResponse<Prompt>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.prompt.list(params);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: prompts list', params);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
+      // Real API call
       async () => {
         const response = await apiClient.get<{ success: boolean; data: PaginatedResponse<Prompt> }>('/prompts', params);
         return response.data;
       },
+      // Mock fallback
       async () => {
         await new Promise(resolve => setTimeout(resolve, 500));
         
@@ -217,10 +285,21 @@ export class PromptsApi {
         };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 
   async getById(id: string): Promise<ApiResponse<Prompt>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.prompt.detail(id);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: prompt detail', id);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
       async () => apiClient.get<ApiResponse<Prompt>>(`/prompts/${id}`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 300));
@@ -231,10 +310,13 @@ export class PromptsApi {
         return { data: prompt, success: true };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 
   async create(data: CreatePromptRequest): Promise<ApiResponse<Prompt>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.post<ApiResponse<Prompt>>('/prompts', data),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 800));
@@ -248,10 +330,16 @@ export class PromptsApi {
         return { data: newPrompt, success: true, message: 'Prompt created successfully' };
       }
     );
+
+    // Invalidate list cache on create
+    this.cache.invalidateByPattern(/^prompts:list:/);
+    console.log('[Cache] Invalidated: prompts list (create)');
+    
+    return result;
   }
 
   async update(id: string, data: UpdatePromptRequest): Promise<ApiResponse<Prompt>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.put<ApiResponse<Prompt>>(`/prompts/${id}`, data),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 600));
@@ -268,10 +356,17 @@ export class PromptsApi {
         return { data: updatedPrompt, success: true, message: 'Prompt updated successfully' };
       }
     );
+
+    // Invalidate list and detail cache on update
+    this.cache.invalidateByPattern(/^prompts:list:/);
+    this.cache.delete(CacheKeyBuilder.prompt.detail(id));
+    console.log('[Cache] Invalidated: prompts list and detail', id);
+    
+    return result;
   }
 
   async delete(id: string): Promise<ApiResponse<void>> {
-    return apiCallWithFallback(
+    const result = await apiCallWithFallback(
       async () => apiClient.delete<ApiResponse<void>>(`/prompts/${id}`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 400));
@@ -283,16 +378,34 @@ export class PromptsApi {
         return { data: undefined, success: true, message: 'Prompt deleted successfully' };
       }
     );
+
+    // Invalidate list and detail cache on delete
+    this.cache.invalidateByPattern(/^prompts:list:/);
+    this.cache.delete(CacheKeyBuilder.prompt.detail(id));
+    console.log('[Cache] Invalidated: prompts list and detail', id);
+    
+    return result;
   }
 
   async getRelated(id: string): Promise<ApiResponse<Prompt[]>> {
-    return apiCallWithFallback(
+    const cacheKey = CacheKeyBuilder.prompt.related(id);
+    
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.log('[Cache] Hit: related prompts', id);
+      return cached;
+    }
+
+    const result = await apiCallWithFallback(
       async () => apiClient.get<ApiResponse<Prompt[]>>(`/prompts/${id}/related`),
       async () => {
         await new Promise(resolve => setTimeout(resolve, 300));
         return { data: [], success: true };
       }
     );
+
+    this.cache.set(cacheKey, result);
+    return result;
   }
 }
 

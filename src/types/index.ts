@@ -27,7 +27,7 @@ export interface Instruction {
 
 export interface InstructionVariable {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'select' | 'file' | 'url';
+  type: 'TEXT' | 'NUMBER' | 'BOOLEAN' | 'SELECT' | 'FILE' | 'URL';
   required: boolean;
   defaultValue?: string;
   options?: string[];
@@ -55,7 +55,7 @@ export interface Prompt {
 
 export interface PromptVariable {
   name: string;
-  type: 'text' | 'number' | 'boolean' | 'select';
+  type: 'TEXT' | 'NUMBER' | 'BOOLEAN' | 'SELECT';
   required: boolean;
   defaultValue?: string;
   options?: string[];

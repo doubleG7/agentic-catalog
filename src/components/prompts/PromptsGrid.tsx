@@ -12,6 +12,7 @@ interface PromptsGridProps {
   onDelete: (id: string) => void;
   onRatingChange?: (id: string, rating: number) => void;
   onCreateClick: () => void;
+  gridRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const PromptsGrid: React.FC<PromptsGridProps> = ({
@@ -21,6 +22,7 @@ export const PromptsGrid: React.FC<PromptsGridProps> = ({
   onDelete,
   onRatingChange,
   onCreateClick,
+  gridRef
 }) => {
   if (prompts.length === 0) {
     return (
@@ -43,7 +45,7 @@ export const PromptsGrid: React.FC<PromptsGridProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div ref={gridRef} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {prompts.map((prompt, index) => (
         <motion.div
           key={prompt.id}

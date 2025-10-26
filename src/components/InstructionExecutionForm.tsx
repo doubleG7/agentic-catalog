@@ -41,7 +41,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
         newErrors[variable.name] = `${variable.name} is required`;
       }
       
-      if (variable.type === 'number' && variableValues[variable.name]) {
+      if (variable.type === 'NUMBER' && variableValues[variable.name]) {
         const numValue = Number(variableValues[variable.name]);
         if (isNaN(numValue)) {
           newErrors[variable.name] = `${variable.name} must be a valid number`;
@@ -64,7 +64,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
     const error = errors[variable.name];
 
     switch (variable.type) {
-      case 'boolean':
+      case 'BOOLEAN':
         return (
           <div className="flex items-center">
             <input
@@ -80,7 +80,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
           </div>
         );
 
-      case 'select':
+      case 'SELECT':
         return (
           <Select
             label={`${variable.name}${variable.required ? ' *' : ''}`}
@@ -91,7 +91,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
           />
         );
 
-      case 'number':
+      case 'NUMBER':
         return (
           <Input
             type="number"
@@ -142,7 +142,7 @@ export const InstructionExecutionForm: React.FC<InstructionExecutionFormProps> =
           {instruction.variables.map((variable) => (
             <div key={variable.name} className="space-y-2">
               {renderVariableInput(variable)}
-              {variable.description && variable.type !== 'boolean' && (
+              {variable.description && variable.type !== 'BOOLEAN' && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">{variable.description}</p>
               )}
             </div>

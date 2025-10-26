@@ -12,6 +12,7 @@ interface InstructionsGridProps {
   onDelete: (id: string) => void;
   onRatingChange?: (id: string, rating: number) => void;
   onCreateClick: () => void;
+  gridRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const InstructionsGrid: React.FC<InstructionsGridProps> = ({
@@ -21,6 +22,7 @@ export const InstructionsGrid: React.FC<InstructionsGridProps> = ({
   onDelete,
   onRatingChange,
   onCreateClick,
+  gridRef
 }) => {
   if (instructions.length === 0) {
     return (
@@ -43,7 +45,7 @@ export const InstructionsGrid: React.FC<InstructionsGridProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div ref={gridRef} className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {instructions.map((instruction, index) => (
         <motion.div
           key={instruction.id}

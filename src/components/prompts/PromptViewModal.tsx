@@ -14,6 +14,7 @@ interface PromptViewModalProps {
   executedTemplate: string;
   onExecute: (variableValues: Record<string, string>) => void;
   onReset: () => void;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
@@ -24,6 +25,7 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
   executedTemplate,
   onExecute,
   onReset,
+  containerRef,
 }) => {
   // Don't render anything if no prompt
   if (!prompt) return null;
@@ -39,6 +41,7 @@ export const PromptViewModal: React.FC<PromptViewModalProps> = React.memo(({
       onClose={onClose}
       title={isExecuted ? 'Executed Prompt' : 'Execute Prompt'}
       size="xl"
+      containerRef={containerRef}
     >
       {!isExecuted ? (
         <PromptExecutionForm
