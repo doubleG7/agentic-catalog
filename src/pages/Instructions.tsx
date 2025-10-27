@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { instructionsApi, ratingsApi } from '../api/services';
 import { 
   Instruction,
@@ -19,6 +20,7 @@ import {
 import toast from 'react-hot-toast';
 
 const Instructions: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     instructions,
     instructionsLoading,
@@ -29,7 +31,9 @@ const Instructions: React.FC = () => {
   const gridRef = React.useRef<HTMLDivElement>(null);
   const [filteredInstructions, setFilteredInstructions] = useState<Instruction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get('category') || 'all'
+  );
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -126,6 +130,21 @@ const Instructions: React.FC = () => {
   useEffect(() => {
     fetchInstructions();
   }, []);
+
+  // Sync category state when URL changes
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') || 'all';
+    setSelectedCategory(categoryFromUrl);
+  }, [searchParams]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category === 'all') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category });
+    }
+  };
 
   const fetchInstructions = async () => {
     try {
@@ -412,7 +431,7 @@ const Instructions: React.FC = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
       <InstructionsGrid

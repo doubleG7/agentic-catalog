@@ -11,6 +11,7 @@ import {
   GitBranch,
   FolderOpen,
   Rocket,
+  Book,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
@@ -70,25 +71,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Collections', href: '/collections', icon: FolderOpen },
     { name: 'Flow View', href: '/flow', icon: GitBranch },
     { name: 'Deployments', href: '/deployments', icon: Rocket },
+    { name: 'Documentation', href: '/documentation', icon: Book },
     { name: 'Settings', href: '/settings', icon: Settings },
-  ];
-
-  const instructionCategories = [
-    { name: 'Business', count: 12 },
-    { name: 'Product', count: 8 },
-    { name: 'Software Engineering', count: 15 },
-    { name: 'Development', count: 22 },
-    { name: 'Project Management', count: 6 },
-    { name: 'Design', count: 9 },
-  ];
-
-  const promptCategories = [
-    { name: 'Code Generation', count: 18 },
-    { name: 'Documentation', count: 11 },
-    { name: 'Analysis', count: 7 },
-    { name: 'Creative', count: 13 },
-    { name: 'Problem Solving', count: 9 },
-    { name: 'Communication', count: 5 },
   ];
 
   return (
@@ -131,8 +115,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <SidebarContent
               navigation={navigation}
-              instructionCategories={instructionCategories}
-              promptCategories={promptCategories}
               currentPath={location.pathname}
               onClose={() => setSidebarOpen(false)}
             />
@@ -145,8 +127,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md h-full">
           <SidebarContent
             navigation={navigation}
-            instructionCategories={instructionCategories}
-            promptCategories={promptCategories}
             currentPath={location.pathname}
           />
         </div>
@@ -187,16 +167,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 interface SidebarContentProps {
   navigation: Array<{ name: string; href: string; icon: any }>;
-  instructionCategories: Array<{ name: string; count: number }>;
-  promptCategories: Array<{ name: string; count: number }>;
   currentPath: string;
   onClose?: () => void;
 }
 
 const SidebarContent: React.FC<SidebarContentProps> = ({
   navigation,
-  instructionCategories,
-  promptCategories,
   currentPath,
   onClose,
 }) => {
@@ -239,8 +215,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           </li>
 
           <BrowseCategories
-            instructionCategories={instructionCategories}
-            promptCategories={promptCategories}
             onClose={onClose}
           />
         </ul>

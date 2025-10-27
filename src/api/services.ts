@@ -11,6 +11,8 @@ import {
   ApiResponse,
   PaginatedResponse,
   HealthStatus,
+  InstructionCategory,
+  PromptCategory,
 } from '../types';
 import { PromotionRequest, Environment } from '../types/versioning';
 
@@ -724,3 +726,50 @@ export class CollectionsApi {
 }
 
 export const collectionApi = new CollectionsApi();
+
+/**
+ * Categories API for fetching category statistics
+ */
+export class CategoriesApi {
+  async getInstructionCategories(): Promise<Array<{ category: InstructionCategory; count: number }>> {
+    return apiCallWithFallback(
+      async () => {
+        const response = await apiClient.get<{ 
+          success: boolean; 
+          data: Array<{ category: InstructionCategory; count: number }> 
+        }>('/categories/instructions');
+        return response.data || [];
+      },
+      async () => {
+        // Mock fallback: return default categories with 0 counts
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return Object.values(InstructionCategory).map(category => ({
+          category,
+          count: 0,
+        }));
+      }
+    );
+  }
+
+  async getPromptCategories(): Promise<Array<{ category: PromptCategory; count: number }>> {
+    return apiCallWithFallback(
+      async () => {
+        const response = await apiClient.get<{ 
+          success: boolean; 
+          data: Array<{ category: PromptCategory; count: number }> 
+        }>('/categories/prompts');
+        return response.data || [];
+      },
+      async () => {
+        // Mock fallback: return default categories with 0 counts
+        await new Promise(resolve => setTimeout(resolve, 100));
+        return Object.values(PromptCategory).map(category => ({
+          category,
+          count: 0,
+        }));
+      }
+    );
+  }
+}
+
+export const categoriesApi = new CategoriesApi();
