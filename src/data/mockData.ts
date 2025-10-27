@@ -308,14 +308,14 @@ This guide provides a complete foundation for building production-ready Gemini g
     variables: [
       {
         name: 'gemName',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'my-gemini-gem',
         description: 'Name for your Gemini gem project'
       },
       {
         name: 'knowledgeLocationType',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['local', 'gcs', 's3', 'azure-blob', 'database'],
         defaultValue: 'local',
@@ -323,21 +323,21 @@ This guide provides a complete foundation for building production-ready Gemini g
       },
       {
         name: 'knowledgePath',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: './knowledge/docs/',
         description: 'Path or connection string for knowledge documents'
       },
       {
         name: 'documentFormats',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: 'pdf,docx,txt,md',
         description: 'Comma-separated list of supported document formats'
       },
       {
         name: 'geminiModel',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
         defaultValue: 'gemini-1.5-pro',
@@ -345,7 +345,7 @@ This guide provides a complete foundation for building production-ready Gemini g
       },
       {
         name: 'enableMultiModal',
-        type: 'boolean',
+        type: 'BOOLEAN',
         required: false,
         defaultValue: 'false',
         description: 'Enable multi-modal support (text, image, audio, video)'
@@ -523,21 +523,21 @@ This guide ensures consistent, secure, and maintainable React applications for E
     variables: [
       {
         name: 'projectName',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'erp-construction-app',
         description: 'Name of the ERP construction project'
       },
       {
         name: 'apiBaseUrl',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'https://api.construction.trimble.com',
         description: 'Base URL for the construction API'
       },
       {
         name: 'authProvider',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['trimble-id', 'oauth2', 'jwt'],
         defaultValue: 'trimble-id',
@@ -545,14 +545,14 @@ This guide ensures consistent, secure, and maintainable React applications for E
       },
       {
         name: 'includeTestSetup',
-        type: 'boolean',
+        type: 'BOOLEAN',
         required: false,
         defaultValue: 'true',
         description: 'Include testing configuration and examples'
       },
       {
         name: 'enableTelemetry',
-        type: 'boolean',
+        type: 'BOOLEAN',
         required: false,
         defaultValue: 'false',
         description: 'Enable telemetry and monitoring setup'
@@ -604,11 +604,11 @@ Please generate clean, production-ready code with proper formatting and comments
       userRating: 5
     },
     variables: [
-      { name: 'componentName', type: 'text', required: true },
-      { name: 'propsInterface', type: 'text', required: false },
-      { name: 'stylingFramework', type: 'select', required: true, options: ['Tailwind CSS', 'Styled Components', 'CSS Modules', 'Emotion'] },
-      { name: 'stateManagement', type: 'select', required: false, options: ['useState', 'useReducer', 'Zustand', 'Redux'] },
-      { name: 'additionalFeatures', type: 'text', required: false }
+      { name: 'componentName', type: 'TEXT', required: true },
+      { name: 'propsInterface', type: 'TEXT', required: false },
+      { name: 'stylingFramework', type: 'SELECT', required: true, options: ['Tailwind CSS', 'Styled Components', 'CSS Modules', 'Emotion'] },
+      { name: 'stateManagement', type: 'SELECT', required: false, options: ['useState', 'useReducer', 'Zustand', 'Redux'] },
+      { name: 'additionalFeatures', type: 'TEXT', required: false }
     ]
   },
   {
@@ -667,17 +667,17 @@ Please include:
     isPublic: true,
     relatedPrompts: ['1'],
     variables: [
-      { name: 'httpMethod', type: 'select', required: true, options: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] },
-      { name: 'endpointPath', type: 'text', required: true },
-      { name: 'endpointDescription', type: 'text', required: true },
-      { name: 'authType', type: 'select', required: true, options: ['None', 'API Key', 'Bearer Token', 'Basic Auth'] },
-      { name: 'requestParameters', type: 'text', required: false },
-      { name: 'requestBody', type: 'text', required: false },
-      { name: 'responseFormat', type: 'text', required: true },
-      { name: 'exampleRequest', type: 'text', required: false },
-      { name: 'exampleResponse', type: 'text', required: true },
-      { name: 'errorHandling', type: 'text', required: false },
-      { name: 'rateLimiting', type: 'text', required: false }
+      { name: 'httpMethod', type: 'SELECT', required: true, options: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] },
+      { name: 'endpointPath', type: 'TEXT', required: true },
+      { name: 'endpointDescription', type: 'TEXT', required: true },
+      { name: 'authType', type: 'SELECT', required: true, options: ['None', 'API Key', 'Bearer Token', 'Basic Auth'] },
+      { name: 'requestParameters', type: 'TEXT', required: false },
+      { name: 'requestBody', type: 'TEXT', required: false },
+      { name: 'responseFormat', type: 'TEXT', required: true },
+      { name: 'exampleRequest', type: 'TEXT', required: false },
+      { name: 'exampleResponse', type: 'TEXT', required: true },
+      { name: 'errorHandling', type: 'TEXT', required: false },
+      { name: 'rateLimiting', type: 'TEXT', required: false }
     ]
   },
   {
@@ -702,25 +702,25 @@ Generate complete implementation with error handling and security best practices
     variables: [
       {
         name: 'applicationName',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'Knowledge Management System'
       },
       {
         name: 'storageTypes',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'Local File System, Google Cloud Storage, AWS S3, Azure Blob Storage, Database'
       },
       {
         name: 'requirements',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'Multi-format support, Real-time sync, Search capabilities'
       },
       {
         name: 'securityLevel',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['Basic', 'Standard', 'High', 'Enterprise'],
         defaultValue: 'Standard'
@@ -778,10 +778,10 @@ Rate the overall code quality on a scale of 1-10 and explain the rating.`,
     isPublic: true,
     relatedPrompts: ['1'],
     variables: [
-      { name: 'language', type: 'select', required: true, options: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Go', 'Rust', 'PHP'] },
-      { name: 'codePurpose', type: 'text', required: true },
-      { name: 'framework', type: 'text', required: false },
-      { name: 'codeBlock', type: 'text', required: true }
+      { name: 'language', type: 'SELECT', required: true, options: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Go', 'Rust', 'PHP'] },
+      { name: 'codePurpose', type: 'TEXT', required: true },
+      { name: 'framework', type: 'TEXT', required: false },
+      { name: 'codeBlock', type: 'TEXT', required: true }
     ]
   },
   {
@@ -811,11 +811,11 @@ Format as a comparison table followed by strategic insights.`,
     isPublic: true,
     relatedPrompts: ['5', '6'],
     variables: [
-      { name: 'product', type: 'text', required: true },
-      { name: 'industry', type: 'text', required: true },
-      { name: 'targetMarket', type: 'text', required: true },
-      { name: 'geographicFocus', type: 'text', required: true },
-      { name: 'budgetRange', type: 'text', required: true }
+      { name: 'product', type: 'TEXT', required: true },
+      { name: 'industry', type: 'TEXT', required: true },
+      { name: 'targetMarket', type: 'TEXT', required: true },
+      { name: 'geographicFocus', type: 'TEXT', required: true },
+      { name: 'budgetRange', type: 'TEXT', required: true }
     ]
   },
   {
@@ -843,8 +843,8 @@ For each trend, indicate:
     isPublic: true,
     relatedPrompts: ['4', '6'],
     variables: [
-      { name: 'industry', type: 'text', required: true },
-      { name: 'problemSolution', type: 'text', required: true }
+      { name: 'industry', type: 'TEXT', required: true },
+      { name: 'problemSolution', type: 'TEXT', required: true }
     ]
   },
   {
@@ -870,38 +870,38 @@ Ensure code is production-ready with proper logging, monitoring, and scalability
     variables: [
       {
         name: 'projectType',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['Web Application', 'Mobile App', 'CLI Tool', 'API Service', 'Desktop App']
       },
       {
         name: 'programmingLanguage',
-        type: 'select', 
+        type: 'SELECT', 
         required: true,
         options: ['JavaScript', 'TypeScript', 'Python', 'Java', 'Go', 'C#']
       },
       {
         name: 'knowledgeLocation',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['Local File System', 'Google Cloud Storage', 'AWS S3', 'Azure Blob Storage', 'Database', 'Multi-Location']
       },
       {
         name: 'documentTypes',
-        type: 'text',
+        type: 'TEXT',
         required: true,
         defaultValue: 'PDF, DOCX, TXT, MD'
       },
       {
         name: 'geminiModel',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro', 'gemini-1.5-pro-vision'],
         defaultValue: 'gemini-1.5-pro'
       },
       {
         name: 'authMethod',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['API Key', 'Service Account', 'OAuth 2.0', 'Application Default Credentials'],
         defaultValue: 'API Key'
@@ -935,18 +935,18 @@ Provide specific recommendations for improvement.`,
     variables: [
       {
         name: 'language',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'Go']
       },
       {
         name: 'codeSection',
-        type: 'text',
+        type: 'TEXT',
         required: true
       },
       {
         name: 'focusAreas',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: 'Performance, Security, Maintainability'
       }
@@ -979,23 +979,23 @@ Make it developer-friendly and comprehensive.`,
     variables: [
       {
         name: 'method',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
       },
       {
         name: 'endpoint',
-        type: 'text',
+        type: 'TEXT',
         required: true
       },
       {
         name: 'description',
-        type: 'text',
+        type: 'TEXT',
         required: true
       },
       {
         name: 'authType',
-        type: 'select',
+        type: 'SELECT',
         required: true,
         options: ['None', 'API Key', 'Bearer Token', 'OAuth 2.0'],
         defaultValue: 'API Key'
@@ -1027,9 +1027,9 @@ Provide 3-4 distinct demographic segments with detailed profiles.`,
     isPublic: true,
     relatedPrompts: ['4', '5'],
     variables: [
-      { name: 'product', type: 'text', required: true },
-      { name: 'productDescription', type: 'text', required: true },
-      { name: 'initialHypothesis', type: 'text', required: false }
+      { name: 'product', type: 'TEXT', required: true },
+      { name: 'productDescription', type: 'TEXT', required: true },
+      { name: 'initialHypothesis', type: 'TEXT', required: false }
     ]
   },
   {
@@ -1063,14 +1063,14 @@ Create:
     isPublic: true,
     relatedPrompts: ['9', '10'],
     variables: [
-      { name: 'productIdea', type: 'text', required: true },
-      { name: 'targetUsers', type: 'text', required: true },
-      { name: 'currentSituation', type: 'text', required: true },
-      { name: 'painPoints', type: 'text', required: true },
-      { name: 'impact', type: 'text', required: true },
-      { name: 'solution', type: 'text', required: false },
-      { name: 'problemPainPoint', type: 'text', required: false },
-      { name: 'existingLimitation', type: 'text', required: false }
+      { name: 'productIdea', type: 'TEXT', required: true },
+      { name: 'targetUsers', type: 'TEXT', required: true },
+      { name: 'currentSituation', type: 'TEXT', required: true },
+      { name: 'painPoints', type: 'TEXT', required: true },
+      { name: 'impact', type: 'TEXT', required: true },
+      { name: 'solution', type: 'TEXT', required: false },
+      { name: 'problemPainPoint', type: 'TEXT', required: false },
+      { name: 'existingLimitation', type: 'TEXT', required: false }
     ]
   },
   {
@@ -1099,8 +1099,8 @@ Prioritize the top 5 pain points we should address first.`,
     isPublic: true,
     relatedPrompts: ['8', '10'],
     variables: [
-      { name: 'userSegment', type: 'text', required: true },
-      { name: 'taskActivity', type: 'text', required: true }
+      { name: 'userSegment', type: 'TEXT', required: true },
+      { name: 'taskActivity', type: 'TEXT', required: true }
     ]
   },
   {
@@ -1140,11 +1140,11 @@ Develop:
     isPublic: true,
     relatedPrompts: ['8', '9'],
     variables: [
-      { name: 'product', type: 'text', required: true },
-      { name: 'audience', type: 'text', required: true },
-      { name: 'coreFunctionality', type: 'text', required: true },
-      { name: 'keyDifferentiators', type: 'text', required: true },
-      { name: 'targetMarket', type: 'text', required: true }
+      { name: 'product', type: 'TEXT', required: true },
+      { name: 'audience', type: 'TEXT', required: true },
+      { name: 'coreFunctionality', type: 'TEXT', required: true },
+      { name: 'keyDifferentiators', type: 'TEXT', required: true },
+      { name: 'targetMarket', type: 'TEXT', required: true }
     ]
   },
   {
@@ -1194,9 +1194,9 @@ Make personas realistic, specific, and actionable for product decisions.`,
     isPublic: true,
     relatedPrompts: ['12', '13'],
     variables: [
-      { name: 'product', type: 'text', required: true },
-      { name: 'marketDescription', type: 'text', required: true },
-      { name: 'existingData', type: 'text', required: false }
+      { name: 'product', type: 'TEXT', required: true },
+      { name: 'marketDescription', type: 'TEXT', required: true },
+      { name: 'existingData', type: 'TEXT', required: false }
     ]
   },
   {
@@ -1231,9 +1231,9 @@ Identify the most critical moments of truth (make-or-break experiences).`,
     isPublic: true,
     relatedPrompts: ['11', '13'],
     variables: [
-      { name: 'personaName', type: 'text', required: true },
-      { name: 'goal', type: 'text', required: true },
-      { name: 'productService', type: 'text', required: true }
+      { name: 'personaName', type: 'TEXT', required: true },
+      { name: 'goal', type: 'TEXT', required: true },
+      { name: 'productService', type: 'TEXT', required: true }
     ]
   },
   {
@@ -1276,12 +1276,12 @@ Also provide:
     isPublic: true,
     relatedPrompts: ['11', '12'],
     variables: [
-      { name: 'topicProductArea', type: 'text', required: true },
-      { name: 'goal1', type: 'text', required: true },
-      { name: 'goal2', type: 'text', required: false },
-      { name: 'goal3', type: 'text', required: false },
-      { name: 'targetInterviewees', type: 'text', required: true },
-      { name: 'interviewLength', type: 'select', required: true, options: ['30 minutes', '45 minutes', '60 minutes'] }
+      { name: 'topicProductArea', type: 'TEXT', required: true },
+      { name: 'goal1', type: 'TEXT', required: true },
+      { name: 'goal2', type: 'TEXT', required: false },
+      { name: 'goal3', type: 'TEXT', required: false },
+      { name: 'targetInterviewees', type: 'TEXT', required: true },
+      { name: 'interviewLength', type: 'SELECT', required: true, options: ['30 minutes', '45 minutes', '60 minutes'] }
     ]
   },
   {
@@ -1324,13 +1324,13 @@ Number all requirements for traceability.`,
     isPublic: true,
     relatedPrompts: ['15', '16'],
     variables: [
-      { name: 'featureProduct', type: 'text', required: true },
-      { name: 'userNeed', type: 'text', required: true },
-      { name: 'targetUsers', type: 'text', required: true },
-      { name: 'successCriteria', type: 'text', required: true },
-      { name: 'role', type: 'text', required: false },
-      { name: 'action', type: 'text', required: false },
-      { name: 'benefit', type: 'text', required: false }
+      { name: 'featureProduct', type: 'TEXT', required: true },
+      { name: 'userNeed', type: 'TEXT', required: true },
+      { name: 'targetUsers', type: 'TEXT', required: true },
+      { name: 'successCriteria', type: 'TEXT', required: true },
+      { name: 'role', type: 'TEXT', required: false },
+      { name: 'action', type: 'TEXT', required: false },
+      { name: 'benefit', type: 'TEXT', required: false }
     ]
   },
   {
@@ -1392,8 +1392,8 @@ For each requirement, specify target metrics and how we'll verify compliance.`,
     isPublic: true,
     relatedPrompts: ['14', '16'],
     variables: [
-      { name: 'productSystem', type: 'text', required: true },
-      { name: 'complianceStandards', type: 'text', required: false }
+      { name: 'productSystem', type: 'TEXT', required: true },
+      { name: 'complianceStandards', type: 'TEXT', required: false }
     ]
   },
   {
@@ -1452,11 +1452,11 @@ For each constraint, note:
     isPublic: true,
     relatedPrompts: ['14', '15'],
     variables: [
-      { name: 'project', type: 'text', required: true },
-      { name: 'existingTechStack', type: 'text', required: true },
-      { name: 'infrastructure', type: 'select', required: true, options: ['Cloud', 'On-Premise', 'Hybrid'] },
-      { name: 'teamSkills', type: 'text', required: true },
-      { name: 'budgetConstraints', type: 'text', required: true }
+      { name: 'project', type: 'TEXT', required: true },
+      { name: 'existingTechStack', type: 'TEXT', required: true },
+      { name: 'infrastructure', type: 'SELECT', required: true, options: ['Cloud', 'On-Premise', 'Hybrid'] },
+      { name: 'teamSkills', type: 'TEXT', required: true },
+      { name: 'budgetConstraints', type: 'TEXT', required: true }
     ]
   }
 ];

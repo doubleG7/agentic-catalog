@@ -19,6 +19,7 @@ interface InstructionFormModalProps {
   onRemoveVariable: (index: number) => void;
   onUpdateVariable: (index: number, field: keyof InstructionVariable, value: any) => void;
   submitButtonText?: string;
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const InstructionFormModal: React.FC<InstructionFormModalProps> = ({
@@ -34,6 +35,7 @@ export const InstructionFormModal: React.FC<InstructionFormModalProps> = ({
   onRemoveVariable,
   onUpdateVariable,
   submitButtonText = 'Create Instruction',
+  containerRef,
 }) => {
   const categoryOptions = Object.values(InstructionCategory).map((category) => ({
     value: category,
@@ -46,6 +48,7 @@ export const InstructionFormModal: React.FC<InstructionFormModalProps> = ({
       onClose={onClose}
       title={title}
       size="lg"
+      containerRef={containerRef}
     >
       <form onSubmit={onSubmit} className="space-y-4">
         <Input

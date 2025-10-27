@@ -9,6 +9,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  containerRef?: React.RefObject<HTMLDivElement>;
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -16,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose, 
   title, 
   children, 
-  size = 'md' 
+  size = 'md'
 }) => {
   const sizeClasses = {
     sm: 'max-w-2xl',
@@ -29,7 +30,7 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-[9999] overflow-y-auto">
           <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
             {/* Backdrop */}
             <motion.div

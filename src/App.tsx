@@ -9,6 +9,7 @@ import Instructions from './pages/Instructions';
 import Prompts from './pages/Prompts';
 import Collections from './pages/Collections';
 import Settings from './pages/Settings';
+import Documentation from './pages/Documentation';
 import InstructionDetail from './pages/InstructionDetail';
 import PromptDetail from './pages/PromptDetail';
 import FlowVisualization from './pages/FlowVisualization';
@@ -16,11 +17,54 @@ import Deployments from './pages/Deployments';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import { AuthService } from './services/AuthService';
+import { categoriesApi } from './api/services';
+import { useCategoryStore } from './store/useCategoryStore';
 
 function App() {
-  // Initialize AuthService on app mount
+  const { setInstructionCategories, setPromptCategories, setIsLoading, setError } = useCategoryStore();
+
+  // Initialize AuthService and load categories on app mount
   useEffect(() => {
     AuthService.initialize();
+    
+    // Fetch categories
+    const loadCategories = async () => {
+      try {
+        setIsLoading(true);
+        const [instructions, prompts] = await Promise.all([
+          categoriesApi.getInstructionCategories(),
+          categoriesApi.getPromptCategories(),
+        ]);
+        
+        // Transform to include display names
+        const instructionCats = instructions.map(cat => ({
+          ...cat,
+          displayName: cat.category
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
+        }));
+        
+        const promptCats = prompts.map(cat => ({
+          ...cat,
+          displayName: cat.category
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
+        }));
+        
+        setInstructionCategories(instructionCats);
+        setPromptCategories(promptCats);
+        setError(null);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        setError('Failed to load categories');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadCategories();
     
     // Auto-login in development mode if not already authenticated
     if (import.meta.env.DEV && !AuthService.isAuthenticated()) {
@@ -77,6 +121,7 @@ function App() {
                     <Route path="/collections" element={<Collections />} />
                     <Route path="/flow" element={<FlowVisualization />} />
                     <Route path="/deployments" element={<Deployments />} />
+                    <Route path="/documentation" element={<Documentation />} />
                     <Route path="/settings" element={<Settings />} />
                   </Routes>
                 </Layout>

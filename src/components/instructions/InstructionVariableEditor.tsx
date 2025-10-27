@@ -47,12 +47,12 @@ export const InstructionVariableEditor: React.FC<InstructionVariableEditorProps>
                   onChange={(e) => onUpdate(index, 'type', e.target.value)}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="boolean">Boolean</option>
-                  <option value="select">Select</option>
-                  <option value="file">File</option>
-                  <option value="url">URL</option>
+                  <option value="TEXT">Text</option>
+                  <option value="NUMBER">Number</option>
+                  <option value="BOOLEAN">Boolean</option>
+                  <option value="SELECT">Select</option>
+                  <option value="FILE">File</option>
+                  <option value="URL">URL</option>
                 </select>
               </div>
               <div className="mt-2 space-y-2">

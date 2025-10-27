@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { promptsApi, ratingsApi } from '../api/services';
 import { 
   Prompt,
@@ -19,6 +20,7 @@ import {
 import toast from 'react-hot-toast';
 
 const Prompts: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     prompts,
     promptsLoading,
@@ -28,9 +30,12 @@ const Prompts: React.FC = () => {
     updatePrompt,
   } = useAppStore();
   
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const [filteredPrompts, setFilteredPrompts] = useState<Prompt[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get('category') || 'all'
+  );
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -59,6 +64,21 @@ const Prompts: React.FC = () => {
   useEffect(() => {
     fetchPrompts();
   }, []);
+
+  // Sync category state when URL changes
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') || 'all';
+    setSelectedCategory(categoryFromUrl);
+  }, [searchParams]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category === 'all') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category });
+    }
+  };
 
   const fetchPrompts = async () => {
     try {
@@ -105,7 +125,7 @@ const Prompts: React.FC = () => {
       ...variables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -330,7 +350,7 @@ const Prompts: React.FC = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
       <PromptsGrid
@@ -340,6 +360,7 @@ const Prompts: React.FC = () => {
         onDelete={handleDelete}
         onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
+        gridRef={gridRef}
       />
 
       {/* Create Modal */}
@@ -359,6 +380,7 @@ const Prompts: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Create Prompt"
+        containerRef={gridRef}
       />
 
       {/* Edit Modal */}
@@ -378,6 +400,7 @@ const Prompts: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Update Prompt"
+        containerRef={gridRef}
       />
 
       {/* View/Execute Modal */}
@@ -389,6 +412,7 @@ const Prompts: React.FC = () => {
         executedTemplate={executedTemplate}
         onExecute={handleExecutePrompt}
         onReset={() => setIsExecuted(false)}
+        containerRef={gridRef}
       />
     </motion.div>
   );

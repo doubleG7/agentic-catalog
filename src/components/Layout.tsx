@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -9,15 +9,16 @@ import {
   MessageSquare,
   Settings,
   GitBranch,
-  Bell,
   FolderOpen,
   Rocket,
+  Book,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAppStore } from '../store/useAppStore';
 import { ThemeToggle } from './ThemeToggle';
 import UserMenu from './UserMenu';
 import { useTheme } from '../contexts/ThemeContext';
+import { BrowseCategories } from './BrowseCategories';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -70,25 +71,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Collections', href: '/collections', icon: FolderOpen },
     { name: 'Flow View', href: '/flow', icon: GitBranch },
     { name: 'Deployments', href: '/deployments', icon: Rocket },
+    { name: 'Documentation', href: '/documentation', icon: Book },
     { name: 'Settings', href: '/settings', icon: Settings },
-  ];
-
-  const instructionCategories = [
-    { name: 'Business', count: 12 },
-    { name: 'Product', count: 8 },
-    { name: 'Software Engineering', count: 15 },
-    { name: 'Development', count: 22 },
-    { name: 'Project Management', count: 6 },
-    { name: 'Design', count: 9 },
-  ];
-
-  const promptCategories = [
-    { name: 'Code Generation', count: 18 },
-    { name: 'Documentation', count: 11 },
-    { name: 'Analysis', count: 7 },
-    { name: 'Creative', count: 13 },
-    { name: 'Problem Solving', count: 9 },
-    { name: 'Communication', count: 5 },
   ];
 
   return (
@@ -131,8 +115,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <SidebarContent
               navigation={navigation}
-              instructionCategories={instructionCategories}
-              promptCategories={promptCategories}
               currentPath={location.pathname}
               onClose={() => setSidebarOpen(false)}
             />
@@ -145,8 +127,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="relative z-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md h-full">
           <SidebarContent
             navigation={navigation}
-            instructionCategories={instructionCategories}
-            promptCategories={promptCategories}
             currentPath={location.pathname}
           />
         </div>
@@ -168,9 +148,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <ThemeToggle />
-              <Button variant="ghost" size="sm">
-                <Bell className="h-5 w-5" />
-              </Button>
               <UserMenu />
             </div>
           </div>
@@ -180,6 +157,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <main className="py-10 relative z-10">
           <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
+
+        {/* Footer */}
+
       </div>
     </div>
   );
@@ -187,21 +167,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 interface SidebarContentProps {
   navigation: Array<{ name: string; href: string; icon: any }>;
-  instructionCategories: Array<{ name: string; count: number }>;
-  promptCategories: Array<{ name: string; count: number }>;
   currentPath: string;
   onClose?: () => void;
 }
 
 const SidebarContent: React.FC<SidebarContentProps> = ({
   navigation,
-  instructionCategories,
-  promptCategories,
   currentPath,
   onClose,
 }) => {
-  const [expandedSection, setExpandedSection] = useState<string | null>('instructions');
-
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-transparent px-6 pb-4">
       <div className="flex h-16 shrink-0 items-center justify-between">
@@ -240,90 +214,9 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
             </ul>
           </li>
 
-          <li>
-            <div className="text-xs font-semibold leading-6 text-gray-400 dark:text-gray-500">
-              BROWSE CATEGORIES
-            </div>
-            <ul role="list" className="-mx-2 mt-2 space-y-1">
-              <li>
-                <button
-                  onClick={() =>
-                    setExpandedSection(
-                      expandedSection === 'instructions' ? null : 'instructions'
-                    )
-                  }
-                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <span>Instructions</span>
-                  <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
-                    {instructionCategories.reduce((sum, cat) => sum + cat.count, 0)}
-                  </span>
-                </button>
-                <AnimatePresence>
-                  {expandedSection === 'instructions' && (
-                    <motion.ul
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="ml-4 overflow-hidden space-y-1"
-                    >
-                      {instructionCategories.map((category) => (
-                        <li key={category.name}>
-                          <Link
-                            to={`/instructions?category=${category.name.toLowerCase().replace(' ', '_')}`}
-                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200"
-                            onClick={onClose}
-                          >
-                            <span>{category.name}</span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">{category.count}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </motion.ul>
-                  )}
-                </AnimatePresence>
-              </li>
-
-              <li>
-                <button
-                  onClick={() =>
-                    setExpandedSection(expandedSection === 'prompts' ? null : 'prompts')
-                  }
-                  className="flex w-full items-center justify-between rounded-md p-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <span>Prompts</span>
-                  <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">
-                    {promptCategories.reduce((sum, cat) => sum + cat.count, 0)}
-                  </span>
-                </button>
-                <AnimatePresence>
-                  {expandedSection === 'prompts' && (
-                    <motion.ul
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="ml-4 overflow-hidden space-y-1"
-                    >
-                      {promptCategories.map((category) => (
-                        <li key={category.name}>
-                          <Link
-                            to={`/prompts?category=${category.name.toLowerCase().replace(' ', '_')}`}
-                            className="flex items-center justify-between rounded-md py-1 px-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200"
-                            onClick={onClose}
-                          >
-                            <span>{category.name}</span>
-                            <span className="text-xs text-gray-400 dark:text-gray-500">{category.count}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </motion.ul>
-                  )}
-                </AnimatePresence>
-              </li>
-            </ul>
-          </li>
+          <BrowseCategories
+            onClose={onClose}
+          />
         </ul>
       </nav>
     </div>

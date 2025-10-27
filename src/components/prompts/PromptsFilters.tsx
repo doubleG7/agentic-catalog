@@ -9,7 +9,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from '../ui/dropdown-menu';
-import { PromptCategory } from '../../types';
+import { useCategoryStore } from '../../store/useCategoryStore';
 
 interface PromptsFiltersProps {
   searchTerm: string;
@@ -24,6 +24,17 @@ export const PromptsFilters: React.FC<PromptsFiltersProps> = ({
   selectedCategory,
   onCategoryChange
 }) => {
+  const { promptCategories } = useCategoryStore();
+
+  const getDisplayName = (category: string): string => {
+    if (category === 'all') return 'All Categories';
+    
+    const categoryStats = promptCategories.find(cat => cat.category === category);
+    return categoryStats?.displayName || category
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
   return (
     <div className="grid grid-cols-[0.3fr_30px_auto] items-center gap-0 md:gap-4">
       <div>
@@ -43,24 +54,16 @@ export const PromptsFilters: React.FC<PromptsFiltersProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="md" className="gap-2">
-              {selectedCategory === 'all' 
-                ? 'All Categories' 
-                : selectedCategory
-                    .split('_')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(' ')}
+              {getDisplayName(selectedCategory)}
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-gray-800">
             <DropdownMenuRadioGroup value={selectedCategory} onValueChange={onCategoryChange}>
               <DropdownMenuRadioItem value="all" className="hover:bg-gray-100 dark:hover:bg-gray-700">All Categories</DropdownMenuRadioItem>
-              {Object.values(PromptCategory).map((category) => (
-                <DropdownMenuRadioItem key={category} value={category} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                  {category
-                    .split('_')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(' ')}
+              {promptCategories.map((catStats) => (
+                <DropdownMenuRadioItem key={catStats.category} value={catStats.category} className="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  {catStats.displayName}
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>

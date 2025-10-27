@@ -95,7 +95,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
       ...variables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -325,7 +325,7 @@ export const EditModals: React.FC<EditModalsProps> = ({
                   />
                 </div>
                 
-                {variable.type === 'select' && (
+                {variable.type === 'SELECT' && (
                   <input
                     type="text"
                     placeholder="Options (comma-separated)"

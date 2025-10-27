@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { instructionsApi, ratingsApi } from '../api/services';
 import { 
   Instruction,
@@ -19,6 +20,7 @@ import {
 import toast from 'react-hot-toast';
 
 const Instructions: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     instructions,
     instructionsLoading,
@@ -26,9 +28,12 @@ const Instructions: React.FC = () => {
     setInstructionsLoading,
   } = useAppStore();
   
+  const gridRef = React.useRef<HTMLDivElement>(null);
   const [filteredInstructions, setFilteredInstructions] = useState<Instruction[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get('category') || 'all'
+  );
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -79,7 +84,7 @@ const Instructions: React.FC = () => {
       ...variables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -103,7 +108,7 @@ const Instructions: React.FC = () => {
       ...editVariables,
       {
         name: '',
-        type: 'text',
+        type: 'TEXT',
         required: false,
         defaultValue: '',
         options: [],
@@ -125,6 +130,21 @@ const Instructions: React.FC = () => {
   useEffect(() => {
     fetchInstructions();
   }, []);
+
+  // Sync category state when URL changes
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category') || 'all';
+    setSelectedCategory(categoryFromUrl);
+  }, [searchParams]);
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    if (category === 'all') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category });
+    }
+  };
 
   const fetchInstructions = async () => {
     try {
@@ -411,7 +431,7 @@ const Instructions: React.FC = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
       <InstructionsGrid
@@ -421,6 +441,7 @@ const Instructions: React.FC = () => {
         onDelete={handleDelete}
         onRatingChange={handleRating}
         onCreateClick={() => setIsCreateModalOpen(true)}
+        gridRef={gridRef}
       />
 
       {/* Create Modal */}
@@ -441,6 +462,7 @@ const Instructions: React.FC = () => {
         onRemoveVariable={removeVariable}
         onUpdateVariable={updateVariable}
         submitButtonText="Create Instruction"
+        containerRef={gridRef}
       />
 
       {/* Edit Modal */}
@@ -462,6 +484,7 @@ const Instructions: React.FC = () => {
         onRemoveVariable={removeEditVariable}
         onUpdateVariable={updateEditVariable}
         submitButtonText="Update Instruction"
+        containerRef={gridRef}
       />
 
       {/* View/Execute Modal */}
@@ -473,6 +496,7 @@ const Instructions: React.FC = () => {
         executedTemplate={executedTemplate}
         onExecute={handleExecuteInstruction}
         onReset={() => setIsExecuted(false)}
+        containerRef={gridRef}
       />
     </motion.div>
   );

@@ -89,7 +89,7 @@ export const VariableEditor: React.FC<VariableEditorProps> = ({
             />
           </div>
           
-          {variable.type === 'select' && (
+          {variable.type === 'SELECT' && (
             <input
               type="text"
               placeholder="Options (comma-separated)"
